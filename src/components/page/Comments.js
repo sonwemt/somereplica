@@ -33,7 +33,7 @@ function Comments({posts, addComment, upvote, downvote}) {
       <ul>
         {currentPost.comments.map((comment) => {
           return <li key={comment.id}>
-            <Votes post={currentPost} upvote={upvote} downvote={downvote} isComment={comment.index}></Votes>
+            <Votes post={currentPost} upvote={upvote} downvote={downvote} isComment={comment}></Votes>
             <Comment comment={comment}/>
           </li>;
         })}
