@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { Votes } from "./Votes";
 
-function PostOverview({posts}) {
+function PostOverview({posts, upvote, downvote}) {
   return (
   <div id="PostContainer">
     <Link to="/submitpost" ><button>submit</button></Link>
@@ -10,7 +10,7 @@ function PostOverview({posts}) {
       {posts.map((post) => {
         return (
         <li key={post.id}>
-          <Votes votes={post.votes} />
+          <Votes post={post} upvote={upvote} downvote={downvote} />
           {
           post.linkExternal ? <a href={`${post.content}`}>{post.title}</a> :
           <Link to={`/${post.id}`} state={{id: post.id}} >

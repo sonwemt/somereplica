@@ -3,8 +3,9 @@ import { useLocation } from "react-router-dom";
 import { SubmitComment } from "./SubmitComment";
 import { Comment } from "./Comment";
 import '../../styles/comments.css';
+import { Votes } from "./Votes";
 
-function Comments({posts, addComment}) {
+function Comments({posts, addComment, upvote, downvote}) {
   const { id } = useLocation().state;
   const [currentPost, setCurrentPost] = useState(false);
 
@@ -32,6 +33,7 @@ function Comments({posts, addComment}) {
       <ul>
         {currentPost.comments.map((comment) => {
           return <li key={comment.id}>
+            <Votes post={currentPost} upvote={upvote} downvote={downvote} isComment={comment.index}></Votes>
             <Comment comment={comment}/>
           </li>;
         })}

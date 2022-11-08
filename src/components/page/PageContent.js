@@ -16,6 +16,7 @@ function PageContent() {
           username: "User1",
           comment: "Lorem ipsum",
           id: "post1comment1",
+          index: 0,
           votes: {
             up: 1,
             down: 0,
@@ -25,6 +26,7 @@ function PageContent() {
           username: "User2",
           comment: "Lorem ipsum",
           id: "post1comment2",
+          index: 1,
           votes: {
             up: 1,
             down: 0, 
@@ -47,19 +49,21 @@ function PageContent() {
           username: "User1",
           comment: "Lorem ipsum",
           id: "post2comment1",
+          index: 0,
           votes: {
             up: 1,
             down: 0,
-          }
+          },
         },
         {
           username: "User2",
           comment: "Lorem ipsum",
           id: "post2comment2",
+          index: 1,
           votes: {
             up: 1,
             down: 0,
-          }
+          },
         },
       ],
       index : 1,
@@ -78,6 +82,7 @@ function PageContent() {
           username: "User1",
           comment: "Lorem ipsum",
           id: "post3comment1",
+          index: 0,
           votes: {
             up: 1,
             down: 0,
@@ -87,6 +92,7 @@ function PageContent() {
           username: "User2",
           comment: "Lorem ipsum",
           id: "post3comment2",
+          index: 1,
           votes: {
             up: 1,
             down: 0,
@@ -109,6 +115,7 @@ function PageContent() {
           username: "User1",
           comment: "Lorem ipsum",
           id: "post4comment1",
+          index: 0,
           votes: {
             up: 1,
             down: 0,
@@ -118,6 +125,7 @@ function PageContent() {
           username: "User2",
           comment: "Lorem ipsum",
           id: "post4comment2",
+          index: 1,
           votes: {
             up: 1,
             down: 0,
@@ -155,18 +163,44 @@ function PageContent() {
     })
     const commentObj = {
       username: currentUser,
-      comment: comment, 
+      comment: comment,
+      index: listOfPosts[index].comments.length,
       id: postId + listOfPosts[index].comments.length + 1,
+      votes: {
+        up: 1,
+        down: 0,
+      }
     }
     const arrayCopy = listOfPosts.slice();
     arrayCopy[index].comments.push(commentObj);
     setListOfPosts(arrayCopy);
   }
 
+  const registerUpvote = (index, isComment) => {
+    const arrayCopy = listOfPosts.slice();
+    if(isComment) {
+      arrayCopy[index].comments[isComment].votes.up += 1;
+    } else {
+      arrayCopy[index].votes.up += 1;
+    }
+    setListOfPosts(arrayCopy);
+  }
+
+  const registerDownvote = (index, isComment) => {
+    const arrayCopy = listOfPosts.slice();
+    if(isComment) {
+      arrayCopy[index].comments[isComment].votes.down += 1;
+    } else {
+      arrayCopy[index].votes.down += 1;
+    }
+    setListOfPosts(arrayCopy);
+  }
+  
+
   return <div id="PageContainer">
       <Routes>
-        <Route path='/' element={<PostOverview posts={listOfPosts} />} />
-        <Route path='/:id' element={<Comments posts={listOfPosts} addComment={addComment}/>} />
+        <Route path='/' element={<PostOverview posts={listOfPosts} upvote={registerUpvote} downvote={registerDownvote} />} />
+        <Route path='/:id' element={<Comments posts={listOfPosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} />} />
         <Route path='/submitpost' element={<SubmitPost addPost={addPost} />}/>
       </Routes>
   </div>
