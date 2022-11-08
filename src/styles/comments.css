@@ -1,0 +1,22 @@
+.commentsContainer {
+  display: grid;
+
+}
+
+.postContent {
+  display: grid;
+  border: solid 1px black;
+  border-radius: 5px;
+}
+
+
+
+.postInfo {
+  width: 50%;
+  display: grid;
+}
+
+.postTitle {
+  font-size: 2rem;
+}
+

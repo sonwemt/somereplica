@@ -1,0 +1,14 @@
+#PageHeader {
+  display: grid;
+  position: sticky;
+  left: 0;
+  top:0;
+  grid-template-columns: 1fr minmax(8rem, 1fr) 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+  width: 100%;
+  place-content: center;
+  place-items: center;
+  background-color: white;
+}
+

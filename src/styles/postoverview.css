@@ -1,0 +1,13 @@
+#PostContainer a {
+  text-decoration-line: none;
+}
+
+.comment-link {
+  color: rgb(29, 29, 29);
+  text-decoration-line:underline;
+}
+
+.comment-link:hover {
+  color: rgb(29, 29, 29);
+  text-decoration-line: none;
+}

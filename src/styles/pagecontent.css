@@ -1,0 +1,7 @@
+#PageContainer {
+  display: grid;
+  grid-row: 2/3;
+  width: 100%;
+  min-height: 80vh;
+  background-color: rgb(226, 226, 226);
+}
