@@ -178,7 +178,6 @@ function PageContent() {
 
   const registerUpvote = (index, isComment) => {
     const arrayCopy = listOfPosts.slice();
-    console.log(isComment);
     if(isComment !== -1) {
       arrayCopy[index].comments[isComment.index].votes.up += 1;
     } else {
@@ -189,7 +188,6 @@ function PageContent() {
 
   const registerDownvote = (index, isComment) => {
     const arrayCopy = listOfPosts.slice();
-    console.log(isComment)
     if(isComment !== -1) {
       arrayCopy[index].comments[isComment.index].votes.down += 1;
     } else {
