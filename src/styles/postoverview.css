@@ -21,30 +21,3 @@
   background-color: rgb(0, 191, 255);
   border-radius: 10px;
 }
-
-.post-item {
-  display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 2rem;
-}
-
-.post-item-content {
-  grid-column: 2/3;
-}
-
-#PostContainer a {
-  text-decoration-line: none;
-}
-
-.comment-link {
-  color: rgb(29, 29, 29);
-  text-decoration-line:underline;
-}
-
-.comment-link:hover {
-  color: rgb(29, 29, 29);
-  text-decoration-line: none;
-}
-.post-list>li {
-  list-style: none;
-}
