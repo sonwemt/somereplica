@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import '../../styles/pagecontent.css';
+import { Login } from '../Login';
 import { Comments } from './Comments';
 import { PostOverview } from './PostOverview';
 import { SubmitPost } from './SubmitPost';
@@ -202,6 +203,7 @@ function PageContent() {
         <Route path='/' element={<PostOverview posts={listOfPosts} upvote={registerUpvote} downvote={registerDownvote} />} />
         <Route path='/:id' element={<Comments posts={listOfPosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} />} />
         <Route path='/submitpost' element={<SubmitPost addPost={addPost} />}/>
+        <Route path='login' element={<Login />}/>
       </Routes>
   </div>
 }
