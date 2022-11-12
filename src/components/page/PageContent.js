@@ -158,7 +158,7 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
     setListOfPosts(prev => prev.concat(postObject));
   }
 
-  const addComment = (postId, currentUser, comment) => {
+  const addComment = (postId, comment) => {
     let index;
     listOfPosts.forEach((post, i) => {
       if(post.id === postId) {
@@ -167,7 +167,7 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
       }
     })
     const commentObj = {
-      username: currentUser,
+      username: isLoggedIn.username,
       comment: comment,
       index: listOfPosts[index].comments.length,
       id: postId + listOfPosts[index].comments.length + 1,

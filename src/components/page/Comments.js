@@ -6,7 +6,7 @@ import '../../styles/comments.css';
 import { Votes } from "./Votes";
 import { PostCard } from "./PostCard";
 
-function Comments({posts, addComment, upvote, downvote}) {
+function Comments({posts, addComment, upvote, downvote, isLoggedIn}) {
   const { id } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
@@ -27,7 +27,11 @@ function Comments({posts, addComment, upvote, downvote}) {
       <div id="post-card-comments">
         <PostCard post={currentPost} upvote={upvote} downvote={downvote}></PostCard>
       </div>
-      <SubmitComment addComment={addComment} postId={id}/>
+      {
+      isLoggedIn ?
+      <SubmitComment addComment={addComment} postId={id} />:
+      <div>You need to be logged in to post a comment</div>
+      }
       <ul className="comment-list">
         {currentPost.comments.map((comment) => {
           return <li key={comment.id} className="comment-item">

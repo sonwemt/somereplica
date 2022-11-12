@@ -15,7 +15,7 @@ function PostOverview({posts, upvote, downvote, isLoggedIn}) {
       {posts.map((post) => {
         return (
           <li className="post-item" key={post.id}>
-             <PostCard post={post} upvote={upvote} downvote={downvote}/>
+             <PostCard post={post} upvote={upvote} downvote={downvote} isLoggedIn={isLoggedIn}/>
           </li>
         );
       })}
