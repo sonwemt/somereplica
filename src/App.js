@@ -34,16 +34,19 @@ function App() {
   }
 
   const verifyLogin = (nameInput, password) => {
-      const findUser = users.find((user) =>{
-        if(user.username === nameInput) {
-          return true;
-        }
+      const findUser = users.find((user) => {
+       return user.username === nameInput
       });
-      console.log(findUser, nameInput, password);
       if(findUser && findUser.password === password){
         setIsLoggedIn({username:findUser.username, index: findUser.index});
         setLoginPrompt(false);
+        return true;
       }
+      return false;
+  }
+
+  const logOutUser = () => {
+    setIsLoggedIn(false);
   }
 
   const showLoginPrompt = () => {
@@ -57,11 +60,11 @@ function App() {
   return (
     <div id="AppContainer">
       <BrowserRouter>
-        <Header showLoginPrompt={showLoginPrompt} isLoggedIn={isLoggedIn}/>
-        <PageContent />
+        <Header showLoginPrompt={showLoginPrompt} isLoggedIn={isLoggedIn} users={users} logOutUser={logOutUser}/>
+        <PageContent isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt}/>
         {
         loginPrompt ?
-        <Login verifyLogin={verifyLogin} showLoginPrompt={showLoginPrompt}/> : null
+        <Login verifyLogin={verifyLogin} showLoginPrompt={showLoginPrompt} addUser={addUser}/> : null
         }
       </BrowserRouter>
     </div>

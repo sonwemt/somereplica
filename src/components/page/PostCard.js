@@ -9,13 +9,18 @@ function PostCard({post, upvote, downvote}) {
     <div className="post-item-content">
       {
       post.linkExternal ? <a href={`${post.content}`}>{post.title}</a> :
-      <Link to={`/${post.id}`} state={{id: post.id}} >
+      <Link to={`/comments/${post.id}`} >
         <div>{post.title}</div>
       </Link>
       }
-      <Link to={`/${post.id}`} state={{id: post.id}} >
-        <div className="comment-link">comments</div>
-      </Link>
+      <div className="post-interactions">
+        <Link to={`/comments/${post.id}`}  >
+          <div className="comment-link">comments</div>
+        </Link>
+        <div>share</div>
+        <div>save</div>
+        <div>...</div>
+      </div>
     </div>
   </>
   );

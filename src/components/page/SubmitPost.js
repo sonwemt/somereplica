@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
-
-
-function SubmitPost({addPost}) {
+function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
   // 0 - Self.post, 1 - Image/video, 2 - Link
   const [submissionType, setSubmissionType] = useState(0);
   const [submissionTitle, setSubmissionTitle] = useState('');
@@ -11,6 +9,11 @@ function SubmitPost({addPost}) {
   const [submissionContent, setSubmissionContent] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if(!isLoggedIn) {
+      showLoginPrompt();
+    }
+  })
 
   const isValidHttpUrl = (string) => {
     let url;
@@ -40,7 +43,7 @@ function SubmitPost({addPost}) {
   }
 
   return <div id="SubmitContainer">
-    <button className="selfButton" onClick={() => {setSubmissionType(0)}}>Post</button>
+    {isLoggedIn?<><button className="selfButton" onClick={() => {setSubmissionType(0)}}>Post</button>
     <button className="mediaButton" onClick={() => {setSubmissionType(1)}}>Image/video</button>
     <button className="linkButton" onClick={() => {setSubmissionType(2)}}>Link</button>
     <form onSubmit={(e) => {preparePost(e)}} >
@@ -51,7 +54,7 @@ function SubmitPost({addPost}) {
         <input type="url" placeholder="https://" value={submissionUrl} onChange={(e) => {setSubmissionUrl(e.target.value)}} required/>
       }
       <button id="SubmitContent" type="submit">Submit</button>
-    </form>
+    </form></>:<Navigate to="/"></Navigate>}
   </div> 
 }
 

@@ -17,6 +17,17 @@
   color: rgb(29, 29, 29);
   text-decoration-line: none;
 }
+
 .post-list>li {
   list-style: none;
+  background-color: white;
+  width: 100%;
+  padding: 2rem;
+  display: grid;
+  align-items: center;
+}
+
+.post-interactions {
+  display: grid;
+  grid-template-columns: repeat(4, 6rem);
 }

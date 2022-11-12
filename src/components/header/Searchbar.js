@@ -1,4 +1,4 @@
-import searchIcon from '../../content/search.png'
+import searchIcon from '../../content/search.png';
 import '../../styles/searchbar.css';
 
 function Searchbar() {

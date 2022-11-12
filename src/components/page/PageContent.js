@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import '../../styles/pagecontent.css';
-import { Login } from '../Login';
 import { Comments } from './Comments';
 import { PostOverview } from './PostOverview';
 import { SubmitPost } from './SubmitPost';
+import { PageNotFound} from '../PageNotFound';
 
-function PageContent() {
+function PageContent({isLoggedIn, showLoginPrompt}) {
   const [listOfPosts, setListOfPosts] = useState([
     {
       title: "First user submitted post",
@@ -149,7 +149,11 @@ function PageContent() {
       comments: [],
       index: listOfPosts.length,
       linkExternal: external,
-      id: `post${listOfPosts.length + 1}`
+      id: `post${listOfPosts.length + 1}`,
+      votes: {
+        up: 1,
+        down: 0,
+      }
     }];
     setListOfPosts(prev => prev.concat(postObject));
   }
@@ -200,10 +204,10 @@ function PageContent() {
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/' element={<PostOverview posts={listOfPosts} upvote={registerUpvote} downvote={registerDownvote} />} />
-        <Route path='/:id' element={<Comments posts={listOfPosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} />} />
-        <Route path='/submitpost' element={<SubmitPost addPost={addPost} />}/>
-        <Route path='login' element={<Login />}/>
+        <Route path='/' element={<PostOverview posts={listOfPosts} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/comments/:id' element={<Comments posts={listOfPosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
+        <Route path='*' element={<PageNotFound /> } />
       </Routes>
   </div>
 }

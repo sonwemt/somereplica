@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { SubmitComment } from "./SubmitComment";
 import { Comment } from "./Comment";
 import '../../styles/comments.css';
@@ -7,13 +7,17 @@ import { Votes } from "./Votes";
 import { PostCard } from "./PostCard";
 
 function Comments({posts, addComment, upvote, downvote}) {
-  const { id } = useLocation().state;
+  const { id } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
+  const [invalidLink, setInvalidLink] = useState(false);
 
   useEffect(() => {
     const post = posts.find((post) => {
       return post.id === id;
     });
+    if(post === undefined) {
+      setInvalidLink(true);
+    }
     setCurrentPost(post);
   }, [currentPost, setCurrentPost, id, posts])
 
@@ -32,7 +36,7 @@ function Comments({posts, addComment, upvote, downvote}) {
           </li>;
         })}
       </ul>
-    </>: null}
+    </>: invalidLink ? <Navigate to='/page-does-not-exist'></Navigate>: <div>Loading</div>}
   </div>
 }
 

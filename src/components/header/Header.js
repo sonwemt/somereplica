@@ -3,11 +3,11 @@ import '../../styles/header.css';
 import { BrandLogo } from "./BrandLogo";
 import { User } from "./User";
 
-function Header({showLoginPrompt}) {
+function Header({showLoginPrompt, isLoggedIn, users,logOutUser}) {
   return <div id="PageHeader">
     <BrandLogo />
     <Searchbar />
-    <User showLoginPrompt={showLoginPrompt}/>
+    <User showLoginPrompt={showLoginPrompt} isLoggedIn={isLoggedIn} logOutUser={logOutUser} users={users}/>
   </div>
 }
 
