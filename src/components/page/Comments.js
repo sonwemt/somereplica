@@ -56,7 +56,7 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
     {currentPost ? 
     <>
       <div className="postcard">
-        <PostCard post={currentPost} upvote={upvote} downvote={downvote}></PostCard>
+        <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
       </div>
       <SubmitComment addComment={addComment} postId={id} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
