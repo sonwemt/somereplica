@@ -4,8 +4,8 @@ import '../../styles/postcard.css';
 
 function PostCard({post, upvote, downvote}) {
   return (
-  <>
-    <Votes post={post} upvote={upvote} downvote={downvote} />
+  <li className="post-item">
+    <Votes postid={post.id} votes={post.votes} upvote={upvote} downvote={downvote} />
     <div className="post-item-content">
       {
       post.linkExternal ? <a href={`${post.content}`}>{post.title}</a> :
@@ -22,7 +22,7 @@ function PostCard({post, upvote, downvote}) {
         <div>...</div>
       </div>
     </div>
-  </>
+  </li>
   );
 }
 

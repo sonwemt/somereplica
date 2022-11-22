@@ -5,208 +5,98 @@ import { Comments } from './Comments';
 import { PostOverview } from './PostOverview';
 import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
+import { UserProfile } from './UserProfile';
+import db from '../firebase';
+import { collection, getDocs, addDoc, updateDoc, increment, doc } from 'firebase/firestore';
+
+const postsRef = collection(db, 'posts');
 
 function PageContent({isLoggedIn, showLoginPrompt}) {
-  const [listOfPosts, setListOfPosts] = useState([
-    {
-      title: "First user submitted post",
-      content: "linkplaceholder",
-      id: "post1",
-      comments: [
-        {
-          username: "User1",
-          comment: "Lorem ipsum",
-          id: "post1comment1",
-          index: 0,
-          votes: {
-            up: 1,
-            down: 0,
-          }
-        },
-        {
-          username: "User2",
-          comment: "Lorem ipsum",
-          id: "post1comment2",
-          index: 1,
-          votes: {
-            up: 1,
-            down: 0, 
-          }
-        },
-      ],
-      index: 0,
-      linkExternal: false,
-      votes: {
-        up: 1,
-        down: 0,
-      }
-    },
-    {
-      title: "Second user submitted post",
-      content: "linkplaceholder",
-      id: "post2",
-      comments: [
-        {
-          username: "User1",
-          comment: "Lorem ipsum",
-          id: "post2comment1",
-          index: 0,
-          votes: {
-            up: 1,
-            down: 0,
-          },
-        },
-        {
-          username: "User2",
-          comment: "Lorem ipsum",
-          id: "post2comment2",
-          index: 1,
-          votes: {
-            up: 1,
-            down: 0,
-          },
-        },
-      ],
-      index : 1,
-      linkExternal: false,
-      votes: {
-        up: 1,
-        down: 0,
-      }
-    },
-    {
-      title: "Third user submitted post",
-      content: "linkplaceholder",
-      id: "post3",
-      comments: [
-        {
-          username: "User1",
-          comment: "Lorem ipsum",
-          id: "post3comment1",
-          index: 0,
-          votes: {
-            up: 1,
-            down: 0,
-          }
-        },
-        {
-          username: "User2",
-          comment: "Lorem ipsum",
-          id: "post3comment2",
-          index: 1,
-          votes: {
-            up: 1,
-            down: 0,
-          }
-        },
-      ],
-      index: 2,
-      linkExternal: false,
-      votes: {
-        up: 1,
-        down: 0,
-      }
-    },
-    {
-      title: "Fourth user submitted post - external link",
-      content: "https://www.google.com",
-      id: "post4",
-      comments: [
-        {
-          username: "User1",
-          comment: "Lorem ipsum",
-          id: "post4comment1",
-          index: 0,
-          votes: {
-            up: 1,
-            down: 0,
-          }
-        },
-        {
-          username: "User2",
-          comment: "Lorem ipsum",
-          id: "post4comment2",
-          index: 1,
-          votes: {
-            up: 1,
-            down: 0,
-          }
-        },
-      ],
-      index: 3,
-      linkExternal: true,
-      votes: {
-        up: 1,
-        down: 0,
-      }
-    },
-  ])
+  const [listOfPosts, setListOfPosts] = useState([]);
 
-  const addPost = (title, content, external) => {
-    const postObject = [{
+  const updatePosts = async () => {
+    const postsSnap = await getDocs(postsRef);
+    let tempArray = [];
+    postsSnap.forEach((doc) => {
+      tempArray.push({
+        title: doc.data().title,
+        content: doc.data().content,
+        id: doc.id,
+        linkExternal: doc.data().linkExternal,
+        votes: doc.data().votes,
+      })
+    })
+    setListOfPosts(tempArray);
+  }
+
+  const addPost = async (title, content, external) => {
+    try {
+      const postRef = await addDoc(postsRef, {
       title: title,
       content: content,
-      comments: [],
-      index: listOfPosts.length,
       linkExternal: external,
-      id: `post${listOfPosts.length + 1}`,
       votes: {
         up: 1,
         down: 0,
-      }
-    }];
-    setListOfPosts(prev => prev.concat(postObject));
-  }
-
-  const addComment = (postId, comment) => {
-    let index;
-    listOfPosts.forEach((post, i) => {
-      if(post.id === postId) {
-        index = i;
-        return;
-      }
-    })
-    const commentObj = {
-      username: isLoggedIn.username,
-      comment: comment,
-      index: listOfPosts[index].comments.length,
-      id: postId + listOfPosts[index].comments.length + 1,
-      votes: {
-        up: 1,
-        down: 0,
-      }
+      },
+    });
+      console.log("Document written with ID: ", postRef.id);
+      updatePosts();
+    } catch (e) {
+      console.error("Error adding post: ", e);
     }
-    const arrayCopy = listOfPosts.slice();
-    arrayCopy[index].comments.push(commentObj);
-    setListOfPosts(arrayCopy);
   }
 
-  const registerUpvote = (index, isComment) => {
-    const arrayCopy = listOfPosts.slice();
-    if(isComment !== -1) {
-      arrayCopy[index].comments[isComment.index].votes.up += 1;
+  const addComment = async (postId, comment) => {
+    try {
+      const commentRef = await addDoc(collection(postsRef, `${postId}`, 'comments'), {
+        username: isLoggedIn.username,
+        comment: comment,
+        votes: {
+          up: 1,
+          down: 0,
+        }
+      });
+      console.log("Document written with ID: ", commentRef.id);
+      updatePosts();
+    } catch (e) {
+      console.error("Error adding comment", e)
+    }
+  }
+
+  const registerUpvote = async (postid, isComment) => {
+    if(!isComment) {
+      await updateDoc(doc(postsRef, `${postid}`), {
+        "votes.up": increment(1)
+      })
     } else {
-      arrayCopy[index].votes.up += 1;
+      await updateDoc(doc(postsRef, `${postid}`, 'comments', `${isComment}`), {
+        "votes.up": increment(1)
+      })
     }
-    setListOfPosts(arrayCopy);
+    updatePosts();
   }
 
-  const registerDownvote = (index, isComment) => {
-    const arrayCopy = listOfPosts.slice();
-    if(isComment !== -1) {
-      arrayCopy[index].comments[isComment.index].votes.down += 1;
+  const registerDownvote = async (postid, isComment) => {
+    if(!isComment) {
+      await updateDoc(doc(postsRef, `${postid}`), {
+        "votes.down": increment(1)
+      })
     } else {
-      arrayCopy[index].votes.down += 1;
+      await updateDoc(doc(postsRef, `${postid}`, 'comments', `${isComment}`), {
+        "votes.down": increment(1)
+      })
     }
-    setListOfPosts(arrayCopy);
+    updatePosts();
   }
   
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/' element={<PostOverview posts={listOfPosts} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/comments/:id' element={<Comments posts={listOfPosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/' element={<PostOverview posts={listOfPosts} updatePosts={updatePosts} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/comments/:id' element={<Comments updatePosts={updatePosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
+        <Route path='/profile' element={<UserProfile user={isLoggedIn}/>} />
         <Route path='*' element={<PageNotFound /> } />
       </Routes>
   </div>

@@ -14,8 +14,8 @@ function SignUp({showSignUpPrompt, addUser}) {
     }
   }
 
-  return <div id='LoginContainer' onClick={() => showSignUpPrompt()}>
-    <form className='loginForm' onSubmit={(e) => {handleSubmit(e)}} onClick={(e) => {e.stopPropagation()}}>
+  return <div id='SignUpContainer' onClick={() => showSignUpPrompt()}>
+    <form className='sign-up-form' onSubmit={(e) => {handleSubmit(e)}} onClick={(e) => {e.stopPropagation()}}>
       <input type="text" placeholder="username" value={nameInput} onChange={(e) => {setNameInput(e.target.value)}}></input>
       <input type="password" placeholder="password" value={passwordInput} onChange={(e) => {setPasswordInput(e.target.value)}}></input>
       <div className='submitContainer'>

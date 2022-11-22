@@ -5,40 +5,67 @@ import { Comment } from "./Comment";
 import '../../styles/comments.css';
 import { Votes } from "./Votes";
 import { PostCard } from "./PostCard";
+import db from '../firebase';
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
-function Comments({posts, addComment, upvote, downvote, isLoggedIn}) {
+function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
   const { id } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
+  const [comments, setComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
 
   useEffect(() => {
-    const post = posts.find((post) => {
-      return post.id === id;
-    });
-    if(post === undefined) {
-      setInvalidLink(true);
+    console.log('update');
+  }, [addComment, updatePosts, upvote, downvote, isLoggedIn, id, currentPost])
+
+  useEffect(() => {
+    const getPost = async () => {
+      const postSnap = await getDoc(doc(db, 'posts', `${id}`));
+      if(postSnap.exists()) {
+        console.log('idmatch')
+        setCurrentPost({
+          title: postSnap.data().title,
+          content: postSnap.content,
+          id: postSnap.id,
+          linkExternal: postSnap.data().linkExternal,
+          votes: postSnap.data().votes,
+        });
+        let tempArray = [];
+        const commentsRef = collection(db, 'posts', id, 'comments');
+        const commentsSnap = await getDocs(commentsRef)
+        commentsSnap.forEach((snap) => {
+          tempArray.push({
+            username: snap.data().username,
+            comment: snap.data().comment,
+            votes: snap.data().votes,
+            id: snap.id,
+          })
+        })
+        setComments(tempArray);
+      } else {
+        setInvalidLink(true);
+      }
     }
-    setCurrentPost(post);
-  }, [currentPost, setCurrentPost, id, posts])
+    if(!invalidLink) {
+      getPost();
+    }
+  }, [updatePosts, id, invalidLink])
 
   return <div className="commentsContainer">
     {currentPost ? 
     <>
-      <div id="post-card-comments">
+      <div className="postcard">
         <PostCard post={currentPost} upvote={upvote} downvote={downvote}></PostCard>
       </div>
-      {
-      isLoggedIn ?
-      <SubmitComment addComment={addComment} postId={id} />:
-      <div>You need to be logged in to post a comment</div>
-      }
-      <ul className="comment-list">
-        {currentPost.comments.map((comment) => {
+      <SubmitComment addComment={addComment} postId={id} isLoggedIn={isLoggedIn} />
+       <ul className="comment-list">
+       {comments ?
+        comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes post={currentPost} upvote={upvote} downvote={downvote} isComment={comment}></Votes>
+            <Votes postid={id} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
             <Comment comment={comment}/>
           </li>;
-        })}
+        }): <div>Loading comments</div>}
       </ul>
     </>: invalidLink ? <Navigate to='/page-does-not-exist'></Navigate>: <div>Loading</div>}
   </div>

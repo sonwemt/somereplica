@@ -1,6 +1,7 @@
 import { useState } from "react";
+import '../../styles/submitcomment.css';
 
-function SubmitComment({postId, addComment}) {
+function SubmitComment({postId, addComment, isLoggedIn}) {
   const [commentInput, setCommentInput] = useState('');
 
   const prepareComment = (e) => {
@@ -8,9 +9,17 @@ function SubmitComment({postId, addComment}) {
     addComment(postId, commentInput);
   }
 
-  return <form noValidate onSubmit={(e) => prepareComment(e)}>
-    <input type="text" placeholder="Comment" value={commentInput} onChange={(e) => {setCommentInput(e.target.value)}}></input>
-    <button type="submit">Submit</button>
+  return <form noValidate className="comment-form" onSubmit={(e) => prepareComment(e)}>
+    {
+    isLoggedIn ?
+    <>
+    <textarea type="text" placeholder="Comment" value={commentInput} onChange={(e) => {setCommentInput(e.target.value)}} rows="4" cols="50" style={{resize: "none"}}></textarea>
+    <button type="submit">Submit</button></>:
+    <>
+    <textarea type="text" placeholder="Comment" disabled={true} rows="4" cols="50" style={{resize: "none"}}></textarea>
+    <div>You need to be logged in to post a comment</div>
+    </>
+    }
   </form>
 }
 
