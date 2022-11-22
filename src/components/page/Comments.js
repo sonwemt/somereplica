@@ -20,7 +20,8 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
 
   useEffect(() => {
     const getPost = async () => {
-      const postSnap = await getDoc(doc(db, 'posts', `${id}`));
+      const postRef = doc(db, 'posts', `${id}`)
+      const postSnap = await getDoc(postRef);
       if(postSnap.exists()) {
         console.log('idmatch')
         setCurrentPost({
