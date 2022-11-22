@@ -8,7 +8,7 @@ import { PostCard } from "./PostCard";
 import db from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
-function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
+function Comments({ addComment, upvote, downvote, isLoggedIn}) {
   const { id } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
   const [comments, setComments] = useState(false);
@@ -16,7 +16,7 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
 
   useEffect(() => {
     console.log('update');
-  }, [addComment, updatePosts, upvote, downvote, isLoggedIn, id, currentPost])
+  }, [addComment, upvote, downvote, isLoggedIn, id, currentPost])
 
   useEffect(() => {
     const getPost = async () => {
@@ -50,10 +50,10 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
     if(!invalidLink) {
       getPost();
     }
-  }, [updatePosts, id, invalidLink])
+  }, [id, invalidLink])
 
-  return <div className="commentsContainer">
-    {currentPost ? 
+  return <div className="commentsContainer">{
+    currentPost ? 
     <>
       <div className="postcard">
         <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
@@ -66,10 +66,14 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
             <Votes postid={id} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
             <Comment comment={comment}/>
           </li>;
-        }): <div>Loading comments</div>}
+        }): 
+        <div>Loading comments</div>}
       </ul>
-    </>: invalidLink ? <Navigate to='/page-does-not-exist'></Navigate>: <div>Loading</div>}
-  </div>
+    </>: 
+    invalidLink ? 
+    <Navigate to='/page-does-not-exist'></Navigate>:
+    <div>Loading</div>
+  }</div>
 }
 
 export { Comments };
