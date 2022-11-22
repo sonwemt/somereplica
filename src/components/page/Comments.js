@@ -26,7 +26,7 @@ function Comments({ addComment, upvote, downvote, isLoggedIn, updatePosts}) {
         console.log('idmatch')
         setCurrentPost({
           title: postSnap.data().title,
-          content: postSnap.content,
+          content: postSnap.data().content,
           id: postSnap.id,
           linkExternal: postSnap.data().linkExternal,
           votes: postSnap.data().votes,
