@@ -6,14 +6,14 @@ import { PostCard } from "./PostCard";
 function PostOverview({posts, upvote, downvote, isLoggedIn, updatePosts}) {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    const updateInfo = async () => {
-      await updatePosts();
-      setIsLoading(false);
-    }
+    console.log('mount')
     if(isLoading){
-      updateInfo();
+      setIsLoading(false);
+      updatePosts();
+      console.log('isloading true');
     }
-  }, [isLoading, setIsLoading, updatePosts])
+    
+  }, [isLoading, updatePosts])
 
   return (
   <div id="PostContainer">
