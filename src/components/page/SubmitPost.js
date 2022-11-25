@@ -32,7 +32,7 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
     const saveID = id;
     if(submissionType === 0) {
       addPost(submissionTitle, submissionContent, saveID, false);
-      navigate('/', { replace: true });
+      navigate(`/r/${id}/`, { replace: true });
     } else if(submissionType === 2) {
       if(isValidHttpUrl(submissionUrl)) {
         addPost(submissionTitle, submissionUrl, saveID, true);
