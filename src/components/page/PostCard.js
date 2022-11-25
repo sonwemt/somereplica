@@ -19,6 +19,9 @@ function PostCard({post, upvote, downvote, detailed = false}) {
       </>
       }
       <div className="post-interactions">
+      <Link to={`/r/${post.subreplica}`}>
+        <div>{post.subreplica}</div>
+      </Link>
         <Link to={`/comments/${post.id}`}  >
           <div className="comment-link">comments</div>
         </Link>

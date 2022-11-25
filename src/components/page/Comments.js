@@ -13,12 +13,25 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
   const [currentPost, setCurrentPost] = useState(false);
   const [comments, setComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
+  const [updateRequest, setUpdateRequest] = useState(false);
+
+  const handleAddComment = async (postId, commentInput) => {
+    await addComment(postId, commentInput);
+    setUpdateRequest(true);
+  }
+
+  const handleUpvote = async (postid, isComment) => {
+    await upvote(postid, isComment);
+    setUpdateRequest(true);
+  }
+
+  const handleDownvote = async (postid, isComment) => {
+    await downvote(postid, isComment);
+    setUpdateRequest(true);
+  }
 
   useEffect(() => {
-    console.log('update');
-  }, [addComment, upvote, downvote, isLoggedIn, id, currentPost])
-
-  useEffect(() => {
+    console.log(id);
     const getPost = async () => {
       const postRef = doc(db, 'posts', `${id}`)
       const postSnap = await getDoc(postRef);
@@ -47,23 +60,28 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
         setInvalidLink(true);
       }
     }
-    if(!invalidLink) {
+    if(!invalidLink || updateRequest) {
+      setUpdateRequest(false);
       getPost();
     }
-  }, [id, invalidLink])
+  }, [id, invalidLink, updateRequest])
+
+  useEffect(() => {
+    console.log('update');
+  }, [addComment, isLoggedIn, id, currentPost])
 
   return <div className="commentsContainer">{
     currentPost ? 
     <>
       <div className="postcard">
-        <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
+        <PostCard post={currentPost} upvote={handleUpvote} downvote={handleDownvote} detailed={true}></PostCard>
       </div>
-      <SubmitComment addComment={addComment} postId={id} isLoggedIn={isLoggedIn} />
+      <SubmitComment addComment={handleAddComment} postId={id} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes postid={id} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
+            <Votes postid={id} votes={comment.votes} upvote={handleUpvote} downvote={handleDownvote} isComment={comment.id} setUpdateRequest={setUpdateRequest}></Votes>
             <Comment comment={comment}/>
           </li>;
         }): 

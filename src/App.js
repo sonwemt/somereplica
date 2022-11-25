@@ -4,7 +4,7 @@ import { Header } from './components/header/Header';
 import { PageContent } from './components/page/PageContent';
 import { useState } from 'react';
 import { Login } from './components/Login';
-import db from './components/firebase';
+//import db from './components/firebase';
 
 
 function App() {

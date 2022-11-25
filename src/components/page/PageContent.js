@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import '../../styles/pagecontent.css';
 import { Comments } from './Comments';
@@ -7,41 +6,28 @@ import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
 import { UserProfile } from './UserProfile';
 import db from '../firebase';
-import { collection, getDocs, addDoc, updateDoc, increment, doc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, increment, doc } from 'firebase/firestore';
+import { CreateSubreplica } from './CreateSubreplica';
 
 const postsRef = collection(db, 'posts');
 
 function PageContent({isLoggedIn, showLoginPrompt}) {
-  const [listOfPosts, setListOfPosts] = useState([]);
-
-  const updatePosts = async () => {
-    const postsSnap = await getDocs(postsRef);
-    let tempArray = [];
-    postsSnap.forEach((doc) => {
-      tempArray.push({
-        title: doc.data().title,
-        content: doc.data().content,
-        id: doc.id,
-        linkExternal: doc.data().linkExternal,
-        votes: doc.data().votes,
-      })
-    })
-    setListOfPosts(tempArray);
-  }
-
-  const addPost = async (title, content, external) => {
+  const addPost = async (title, content, subreplica, external) => {
     try {
       const postRef = await addDoc(postsRef, {
       title: title,
       content: content,
       linkExternal: external,
+      subreplica: subreplica,
       votes: {
         up: 1,
         down: 0,
       },
     });
+    await addDoc(collection(db, 'subreplicas', `${subreplica}`, 'posts'), {
+      ref: postRef
+    })
       console.log("Document written with ID: ", postRef.id);
-      updatePosts();
     } catch (e) {
       console.error("Error adding post: ", e);
     }
@@ -58,7 +44,6 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
         }
       });
       console.log("Document written with ID: ", commentRef.id);
-      updatePosts();
     } catch (e) {
       console.error("Error adding comment", e)
     }
@@ -74,7 +59,6 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
         "votes.up": increment(1)
       })
     }
-    updatePosts();
   }
 
   const registerDownvote = async (postid, isComment) => {
@@ -87,15 +71,16 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
         "votes.down": increment(1)
       })
     }
-    updatePosts();
   }
   
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/' element={<PostOverview posts={listOfPosts} updatePosts={updatePosts} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/comments/:id' element={<Comments updatePosts={updatePosts} addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
+        <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:id' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/comments/:id' element={<Comments addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:id/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
+        <Route path='/createsubreplica' element={<CreateSubreplica isLoggedIn={isLoggedIn}/>} />
         <Route path='/profile' element={<UserProfile user={isLoggedIn}/>} />
         <Route path='*' element={<PageNotFound /> } />
       </Routes>

@@ -1,34 +1,109 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
+import { getDoc, getDocs, doc, collection } from 'firebase/firestore';
+import db from '../firebase';
 
-function PostOverview({posts, upvote, downvote, isLoggedIn, updatePosts}) {
-  const [isLoading, setIsLoading] = useState(true);
+function PostOverview({upvote, downvote, isLoggedIn}) {
+  const { id } = useParams();
+  const [invalidLink, setInvalidLink] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+  const handleUpvote = (postid, isComment) => {
+    upvote(postid, isComment);
+    const upvoted = posts.map((post) => {
+      if(post.id === postid) {
+        post.votes.up += 1;
+        return post;
+      }
+      return post;
+    })
+    setPosts(upvoted);
+  }
+
+  const handleDownvote = (postid, isComment) => {
+    downvote(postid, isComment);
+    const downvoted = posts.map((post) => {
+      if(post.id === postid) {
+        post.votes.down += 1;
+        return post;
+      }
+      return post;
+    })
+    setPosts(downvoted);
+  }
+
   useEffect(() => {
-    console.log('mount')
-    if(isLoading){
-      setIsLoading(false);
-      updatePosts();
-      console.log('isloading true');
+    let tempArray = [];
+    const updatePosts = async () => {
+      if(id === undefined) {
+        const postsSnap = await getDocs(collection(db, 'posts'));
+        postsSnap.forEach((doc) => {
+          tempArray.push({
+            title: doc.data().title,
+            content: doc.data().content,
+            id: doc.id,
+            linkExternal: doc.data().linkExternal,
+            votes: doc.data().votes,
+            subreplica: doc.data().subreplica,
+          })
+          setPosts(tempArray);
+        })
+      } else {
+        const subSnap = await getDoc(doc(db, 'subreplicas', `${id}`));
+        if(subSnap.exists()) {
+          const postsSnap = await getDocs(collection(db, 'subreplicas', `${id}`, 'posts'))
+          postsSnap.forEach(async (doc) => {
+            const docRef = doc.data().ref;
+            const docSnap = await getDoc(docRef);
+            tempArray.push({
+              title: docSnap.data().title,
+              content: docSnap.data().content,
+              id: docSnap.id,
+              linkExternal: docSnap.data().linkExternal,
+              votes: docSnap.data().votes,
+              subreplica: docSnap.data().subreplica,
+            })
+            setPosts(tempArray);
+          });
+        } else {
+          setInvalidLink(true);
+        }
+        
+      }    
+      console.log(tempArray);
     }
-    
-  }, [isLoading, updatePosts])
+    updatePosts();
+  }, [id])
+
+  useEffect(() => {
+
+  }, [posts])
 
   return (
   <div id="PostContainer">
-   {isLoggedIn ?
-     <Link to="/submitpost" className="submit-link">
-      Submit
-    </Link> : 
+  {invalidLink ? <Navigate to='/page-not-found' /> :
+  isLoggedIn ?
+    <>
+    {
+      id === undefined ? null:
+      <Link to={`/r/${id}/submitpost`} className="submit-link">
+        Submit
+      </Link> 
+    }
+    <Link to="/createsubreplica" className="submit-link">
+      Create Subreplica
+    </Link>
+    </>: 
     <div>Log in or sign up to submit posts</div>
     }
     <ul className="post-list">
-      {posts.map((post) => {
+      {posts ? posts.map((post) => {
         return (
-          <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote} isLoggedIn={isLoggedIn}/>
+          <PostCard key={post.id} post={post} upvote={handleUpvote} downvote={handleDownvote} isLoggedIn={isLoggedIn}/>
         );
-      })}
+      }): null}
     </ul>
   </div>
   )

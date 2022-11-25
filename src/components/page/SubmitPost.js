@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
   // 0 - Self.post, 1 - Image/video, 2 - Link
@@ -8,6 +8,7 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
   const [submissionUrl, setSubmissionUrl] = useState('');
   const [submissionContent, setSubmissionContent] = useState('');
   const navigate = useNavigate();
+  const {id} = useParams();
 
   useEffect(() => {
     if(!isLoggedIn) {
@@ -28,12 +29,13 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
 
   const preparePost = (e) => {
     e.preventDefault();
+    const saveID = id;
     if(submissionType === 0) {
-      addPost(submissionTitle, submissionContent, false);
+      addPost(submissionTitle, submissionContent, saveID, false);
       navigate('/', { replace: true });
     } else if(submissionType === 2) {
       if(isValidHttpUrl(submissionUrl)) {
-        addPost(submissionTitle, submissionUrl, true);
+        addPost(submissionTitle, submissionUrl, saveID, true);
         navigate('/', { replace: true });
         console.log('link valid');
       } else {
