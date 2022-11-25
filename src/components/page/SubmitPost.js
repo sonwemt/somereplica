@@ -27,16 +27,16 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
     return url.protocol === 'https:' || url.protocol === 'http:';
   }
 
-  const preparePost = (e) => {
+  const preparePost = async (e) => {
     e.preventDefault();
     const saveID = id;
     if(submissionType === 0) {
-      addPost(submissionTitle, submissionContent, saveID, false);
-      navigate(`/r/${id}/`, { replace: true });
+      await addPost(submissionTitle, submissionContent, saveID, false);
+      navigate(`/r/${id}/`, {replace: true});
     } else if(submissionType === 2) {
       if(isValidHttpUrl(submissionUrl)) {
-        addPost(submissionTitle, submissionUrl, saveID, true);
-        navigate('/', { replace: true });
+        await addPost(submissionTitle, submissionUrl, saveID, true);
+        navigate(`/r/${id}/`, {replace: true});
         console.log('link valid');
       } else {
         console.log('link invalid');
