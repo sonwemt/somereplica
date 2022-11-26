@@ -4,6 +4,7 @@ import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
 import { getDoc, getDocs, doc, collection } from 'firebase/firestore';
 import db from '../firebase';
+import { SubList } from "./SubList";
 
 function PostOverview({upvote, downvote, isLoggedIn}) {
   const { id } = useParams();
@@ -72,7 +73,6 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
         }
         
       }    
-      console.log(tempArray);
     }
     updatePosts();
   }, [id])
@@ -83,6 +83,8 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
 
   return (
   <div id="PostContainer">
+  <h1 className="sub-header">{id === undefined ? 'Frontpage': id}</h1>
+  <SubList></SubList>
   {invalidLink ? <Navigate to='/page-not-found' /> :
   isLoggedIn ?
     <>
