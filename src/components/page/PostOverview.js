@@ -74,12 +74,10 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
         
       }    
     }
+    setPosts([]);
     updatePosts();
+    console.log('idtrigger');
   }, [id])
-
-  useEffect(() => {
-
-  }, [posts])
 
   return (
   <div id="PostContainer">

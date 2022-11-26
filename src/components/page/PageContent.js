@@ -76,8 +76,8 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/r/:id' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/comments/:id' element={<Comments addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/r/:id/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
         <Route path='/createsubreplica' element={<CreateSubreplica isLoggedIn={isLoggedIn}/>} />
