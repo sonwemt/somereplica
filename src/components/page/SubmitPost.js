@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
-function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
+function SubmitPost({isLoggedIn, addPost}) {
   // 0 - Self.post, 1 - Image/video, 2 - Link
   const [submissionType, setSubmissionType] = useState(0);
   const [submissionTitle, setSubmissionTitle] = useState('');
@@ -9,12 +9,6 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
   const [submissionContent, setSubmissionContent] = useState('');
   const navigate = useNavigate();
   const {subid} = useParams();
-
-  useEffect(() => {
-    if(!isLoggedIn) {
-      showLoginPrompt();
-    }
-  })
 
   const isValidHttpUrl = (string) => {
     let url;
@@ -55,7 +49,7 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
         <input type="url" placeholder="https://" value={submissionUrl} onChange={(e) => {setSubmissionUrl(e.target.value)}} required/>
       }
       <button id="SubmitContent" type="submit">Submit</button>
-    </form></>:<Navigate to="/"></Navigate>}
+    </form></>:<Navigate to={`/r/${subid}/`}></Navigate>}
   </div> 
 }
 
