@@ -19,6 +19,7 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
       content: content,
       linkExternal: external,
       subreplica: subreplica,
+      user: isLoggedIn.username,
       votes: {
         up: 1,
         down: 0,
@@ -26,7 +27,7 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
     });
     await addDoc(collection(db, 'subreplicas', `${subreplica}`, 'posts'), {
       ref: postRef
-    })
+    });
       console.log("Document written with ID: ", postRef.id);
     } catch (e) {
       console.error("Error adding post: ", e);
@@ -76,12 +77,12 @@ function PageContent({isLoggedIn, showLoginPrompt}) {
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/r/:id' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:subid' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:subid/comments/:commentsid' element={<Comments addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/comments/:id' element={<Comments addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/r/:id/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
+        <Route path='/r/:subid/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt} addPost={addPost} />}/>
         <Route path='/createsubreplica' element={<CreateSubreplica isLoggedIn={isLoggedIn}/>} />
-        <Route path='/profile' element={<UserProfile user={isLoggedIn}/>} />
+        <Route path='/u/:userid' element={<UserProfile isLoggedIn={isLoggedIn}/>} />
         <Route path='*' element={<PageNotFound /> } />
       </Routes>
   </div>

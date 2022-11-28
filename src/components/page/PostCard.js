@@ -10,7 +10,7 @@ function PostCard({post, upvote, downvote, detailed = false}) {
       {
       post.linkExternal ? <a href={`${post.content}`}>{post.title}</a> :
       <>
-      <Link to={`/comments/${post.id}`} >
+      <Link to={`/r/${post.subreplica}/comments/${post.id}`} >
         <div>{post.title}</div>
       </Link>
       {detailed ?
@@ -20,9 +20,12 @@ function PostCard({post, upvote, downvote, detailed = false}) {
       }
       <div className="post-interactions">
       <Link to={`/r/${post.subreplica}`}>
-        <div>{post.subreplica}</div>
+        <div>/r/{post.subreplica}</div>
       </Link>
-        <Link to={`/comments/${post.id}`}  >
+      <Link to={`/u/${post.user}/`}>
+        <div>/u/{post.user}</div>
+      </Link>
+        <Link to={`/r/${post.subreplica}/comments/${post.id}`}  >
           <div className="comment-link">comments</div>
         </Link>
         <div>share</div>

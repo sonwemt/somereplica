@@ -8,7 +8,7 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
   const [submissionUrl, setSubmissionUrl] = useState('');
   const [submissionContent, setSubmissionContent] = useState('');
   const navigate = useNavigate();
-  const {id} = useParams();
+  const {subid} = useParams();
 
   useEffect(() => {
     if(!isLoggedIn) {
@@ -29,14 +29,13 @@ function SubmitPost({isLoggedIn, showLoginPrompt, addPost}) {
 
   const preparePost = async (e) => {
     e.preventDefault();
-    const saveID = id;
     if(submissionType === 0) {
-      await addPost(submissionTitle, submissionContent, saveID, false);
-      navigate(`/r/${id}/`, {replace: true});
+      await addPost(submissionTitle, submissionContent, subid, false);
+      navigate(`/r/${subid}/`, {replace: true});
     } else if(submissionType === 2) {
       if(isValidHttpUrl(submissionUrl)) {
-        await addPost(submissionTitle, submissionUrl, saveID, true);
-        navigate(`/r/${id}/`, {replace: true});
+        await addPost(submissionTitle, submissionUrl, subid, true);
+        navigate(`/r/${subid}/`, {replace: true});
         console.log('link valid');
       } else {
         console.log('link invalid');
