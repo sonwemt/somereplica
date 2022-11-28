@@ -63,7 +63,7 @@ function App() {
     <div id="AppContainer">
       <BrowserRouter>
         <Header showLoginPrompt={showLoginPrompt} isLoggedIn={isLoggedIn} users={users} logOutUser={logOutUser}/>
-        <PageContent isLoggedIn={isLoggedIn} showLoginPrompt={showLoginPrompt}/>
+        <PageContent isLoggedIn={isLoggedIn}/>
         {
         loginPrompt ?
         <Login verifyLogin={verifyLogin} showLoginPrompt={showLoginPrompt} addUser={addUser}/> : null

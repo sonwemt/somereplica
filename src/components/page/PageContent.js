@@ -11,7 +11,7 @@ import { CreateSubreplica } from './CreateSubreplica';
 
 const postsRef = collection(db, 'posts');
 
-function PageContent({isLoggedIn, showLoginPrompt}) {
+function PageContent({isLoggedIn}) {
   const addPost = async (title, content, subreplica, external) => {
     try {
       const postRef = await addDoc(postsRef, {
