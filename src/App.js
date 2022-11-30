@@ -8,7 +8,7 @@ import { Login } from './components/Login';
 
 
 function App() {
-  const [users, setUsers] = useState([
+  const users = [
     {
       username: 'user1',
       password: 'hunter1',
@@ -24,16 +24,9 @@ function App() {
       password: 'hunter3',
       index: 2,
     },
-  ]);
+  ];
   const [loginPrompt, setLoginPrompt] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
-  const addUser = (username, password) => {
-    let arrayCopy = users.slice();
-    arrayCopy.push({username, password})
-    setUsers(arrayCopy);
-  }
 
   const verifyLogin = (nameInput, password) => {
       const findUser = users.find((user) => {
@@ -66,7 +59,7 @@ function App() {
         <PageContent isLoggedIn={isLoggedIn}/>
         {
         loginPrompt ?
-        <Login verifyLogin={verifyLogin} showLoginPrompt={showLoginPrompt} addUser={addUser}/> : null
+        <Login verifyLogin={verifyLogin} showLoginPrompt={showLoginPrompt}/> : null
         }
       </BrowserRouter>
     </div>

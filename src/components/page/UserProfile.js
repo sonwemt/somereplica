@@ -31,13 +31,13 @@ function UserProfile({isLoggedIn}) {
     {
      loading ?
      <div>Loading user</div>: 
-      userData ? 
-        <div>
-          <span>{userData.username}</span><br/>
-          {isLoggedIn.username === userData.username ? <div>You are currently logged in</div>: null}
-          Karma: {userData.votes.up - userData.votes.down}
-        </div>:
-        <Navigate to='/page-does-not-exists' />
+    userData ? 
+      <div>
+        <span>{userData.username}</span><br/>
+        {isLoggedIn.username === userData.username ? <div>You are currently logged in</div>: null}
+        Karma: {userData.votes.up - userData.votes.down}
+      </div>:
+      <Navigate to='/page-does-not-exist' />
     }
   </div>
 }
