@@ -5,7 +5,7 @@ import { Comment } from "./Comment";
 import '../../styles/comments.css';
 import { Votes } from "./Votes";
 import { PostCard } from "./PostCard";
-import db from '../firebase';
+import { db } from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 function Comments({ addComment, upvote, downvote, isLoggedIn}) {

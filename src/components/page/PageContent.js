@@ -5,7 +5,7 @@ import { PostOverview } from './PostOverview';
 import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
 import { UserProfile } from './UserProfile';
-import db from '../firebase';
+import { db } from '../firebase';
 import { collection, addDoc, updateDoc, increment, doc } from 'firebase/firestore';
 import { CreateSubreplica } from './CreateSubreplica';
 

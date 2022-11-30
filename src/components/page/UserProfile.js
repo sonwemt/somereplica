@@ -1,7 +1,7 @@
 import { getDoc, doc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import db from '../firebase';
+import { db } from '../firebase';
 
 function UserProfile({isLoggedIn}) {
   const {userid} = useParams();

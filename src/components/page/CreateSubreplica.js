@@ -1,6 +1,6 @@
 import { collection, getDoc, doc, setDoc} from 'firebase/firestore';
 import { useState } from 'react';
-import db from '../firebase';
+import { db } from '../firebase';
 
 function CreateSubreplica({isLoggedIn}) {
   const [subreplica, setSubreplica] = useState('');

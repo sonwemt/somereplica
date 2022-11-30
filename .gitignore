@@ -25,7 +25,7 @@ yarn-error.log*
 
 # firebase
 
-firebase.js*
+firebase.js
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*

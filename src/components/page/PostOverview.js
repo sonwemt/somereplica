@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
 import { getDoc, getDocs, doc, collection } from 'firebase/firestore';
-import db from '../firebase';
+import { db } from '../firebase';
 import { SubList } from "./SubList";
 
 function PostOverview({upvote, downvote, isLoggedIn}) {
