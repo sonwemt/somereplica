@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
-function UserInfo({isLoggedIn, users, logOutUser}) {
+function UserInfo({isLoggedIn, logOutUser}) {
   return <div>
     <div>profile-img</div>
-    <Link to={`/u/${isLoggedIn.username}`}>
-      <div>{users[isLoggedIn.index].username}</div>
+    <Link to={`/u/${isLoggedIn.displayName}`}>
+      <div>{isLoggedIn.displayName}</div>
     </Link>
     <button onClick={() => logOutUser()}>Log out</button>
   </div>  

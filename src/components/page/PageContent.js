@@ -19,13 +19,16 @@ function PageContent({isLoggedIn}) {
       content: content,
       linkExternal: external,
       subreplica: subreplica,
-      user: isLoggedIn.username,
+      user: isLoggedIn.displayName,
       votes: {
         up: 1,
         down: 0,
       },
     });
     await addDoc(collection(db, 'subreplicas', `${subreplica}`, 'posts'), {
+      ref: postRef
+    });
+    await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'posts'), {
       ref: postRef
     });
       console.log("Document written with ID: ", postRef.id);
@@ -37,12 +40,15 @@ function PageContent({isLoggedIn}) {
   const addComment = async (postId, comment) => {
     try {
       const commentRef = await addDoc(collection(postsRef, `${postId}`, 'comments'), {
-        username: isLoggedIn.username,
+        username: isLoggedIn.displayName,
         comment: comment,
         votes: {
           up: 1,
           down: 0,
         }
+      });
+      await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
+        ref: commentRef,
       });
       console.log("Document written with ID: ", commentRef.id);
     } catch (e) {

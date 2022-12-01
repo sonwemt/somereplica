@@ -12,7 +12,7 @@ function CreateSubreplica({isLoggedIn}) {
     const subSnap = await getDoc(doc(subsRef, `${subreplica}`));
     if(!subSnap.exists()) {
       setDoc(doc(subsRef, `${subreplica}`), {
-        creator: isLoggedIn.username,
+        creator: isLoggedIn.displayName,
       })
       setFormMessage('success');
     } else {
