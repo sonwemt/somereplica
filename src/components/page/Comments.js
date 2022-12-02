@@ -20,16 +20,6 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
     setUpdateRequest(true);
   }
 
-  const handleUpvote = async (postid, isComment) => {
-    await upvote(postid, isComment);
-    setUpdateRequest(true);
-  }
-
-  const handleDownvote = async (postid, isComment) => {
-    await downvote(postid, isComment);
-    setUpdateRequest(true);
-  }
-
   useEffect(() => {
     const getPost = async () => {
       const postRef = doc(db, 'posts', `${commentsid}`)
@@ -76,14 +66,14 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
     currentPost ? 
     <>
       <div className="postcard">
-        <PostCard post={currentPost} upvote={handleUpvote} downvote={handleDownvote} detailed={true}></PostCard>
+        <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
       </div>
       <SubmitComment addComment={handleAddComment} postId={commentsid} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes postid={commentsid} votes={comment.votes} upvote={handleUpvote} downvote={handleDownvote} isComment={comment.id} setUpdateRequest={setUpdateRequest}></Votes>
+            <Votes postid={commentsid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id} setUpdateRequest={setUpdateRequest}></Votes>
             <Comment comment={comment}/>
           </li>;
         }): 

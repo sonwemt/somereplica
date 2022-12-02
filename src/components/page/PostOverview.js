@@ -11,30 +11,6 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
   const [invalidLink, setInvalidLink] = useState(false);
   const [posts, setPosts] = useState([]);
 
-  const handleUpvote = (postid, isComment) => {
-    upvote(postid, isComment);
-    const upvoted = posts.map((post) => {
-      if(post.id === postid) {
-        post.votes.up += 1;
-        return post;
-      }
-      return post;
-    })
-    setPosts(upvoted);
-  }
-
-  const handleDownvote = (postid, isComment) => {
-    downvote(postid, isComment);
-    const downvoted = posts.map((post) => {
-      if(post.id === postid) {
-        post.votes.down += 1;
-        return post;
-      }
-      return post;
-    })
-    setPosts(downvoted);
-  }
-
   useEffect(() => {
     let tempArray = [];
     const updatePosts = async () => {
@@ -104,7 +80,7 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
       <ul className="post-list">
         {posts.length > 0 ? posts.map((post) => {
           return (
-            <PostCard key={post.id} post={post} upvote={handleUpvote} downvote={handleDownvote} isLoggedIn={isLoggedIn}/>
+            <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote} isLoggedIn={isLoggedIn}/>
           );
         }): <div>No posts yet, be the first!</div>}
       </ul>
