@@ -88,7 +88,7 @@ function PageContent({isLoggedIn}) {
         <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
         <Route path='/r/:subid/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} addPost={addPost} />}/>
         <Route path='/createsubreplica' element={<CreateSubreplica isLoggedIn={isLoggedIn}/>} />
-        <Route path='/u/:userid' element={<UserProfile isLoggedIn={isLoggedIn}/>} />
+        <Route path='/u/:userid' element={<UserProfile isLoggedIn={isLoggedIn} upvote={registerUpvote} downvote={registerDownvote}/>} />
         <Route path='*' element={<PageNotFound /> } />
       </Routes>
   </div>
