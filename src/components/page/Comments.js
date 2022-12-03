@@ -3,7 +3,6 @@ import { Navigate, useParams } from "react-router-dom";
 import { SubmitComment } from "./SubmitComment";
 import { Comment } from "./Comment";
 import '../../styles/comments.css';
-import { Votes } from "./Votes";
 import { PostCard } from "./PostCard";
 import { db } from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -77,8 +76,7 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes postid={postid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
-            <Comment comment={comment}/>
+            <Comment comment={comment} upvote={upvote} downvote={downvote}/>
           </li>;
         }): 
         <div>No comments yet</div>}
