@@ -29,7 +29,7 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
       }
       setLoading(false);
     }
-    if(loading) {
+    if(loading || userData.username !== userid) {
       getUserData();
     }
   }, [loading, userData, userid])
@@ -81,8 +81,9 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
           id: docSnap.id,
           postRef: docSnap.data().postRef,
         })
+        setUserComments(commentArray);
+
       })
-      setUserComments(commentArray);
     }
     if(selection === 1 && userData && !userComments) {
       getComments();
@@ -108,7 +109,7 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
             return <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote}/>
           }) : selection === 1 && userComments ? userComments.map((comment) => {
             return <Comment key={comment.id} comment={comment}/>
-          }):null}
+          }): null}
         </div>
       </div>:
       <Navigate to='/page-does-not-exist' />
