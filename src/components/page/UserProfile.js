@@ -79,7 +79,8 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
           comment: docSnap.data().comment,
           votes: docSnap.data().votes,
           id: docSnap.id,
-          postRef: docSnap.data().postRef,
+          postid: docSnap.data().postid,
+          subreplica: docSnap.data().subreplica,
         })
         setUserComments(commentArray);
       })
@@ -94,7 +95,7 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
     {
      loading ?
      <div>Loading user</div>: 
-    userData ? 
+      userData ? 
       <div>
         <span>{userData.username}</span><br/>
         {isLoggedIn.username === userData.username ? <div>You are currently logged in</div>: null}

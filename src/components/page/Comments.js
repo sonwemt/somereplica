@@ -10,13 +10,14 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 function Comments({ addComment, upvote, downvote, isLoggedIn}) {
   const { commentsid } = useParams();
+  const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
   const [comments, setComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
   const [updateRequest, setUpdateRequest] = useState(false);
 
-  const handleAddComment = async (postId, commentInput) => {
-    await addComment(postId, commentInput);
+  const handleAddComment = async (postid, commentInput) => {
+    await addComment(postid, subid,commentInput);
     setUpdateRequest(true);
   }
 
@@ -44,9 +45,12 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
             comment: snap.data().comment,
             votes: snap.data().votes,
             id: snap.id,
+            postid: snap.data().postid,
+            subreplica: snap.data().subreplica,
           })
+          setComments(tempArray);
         })
-        setComments(tempArray);
+
       } else {
         setInvalidLink(true);
         console.log('comments invalid')
@@ -73,11 +77,11 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes postid={commentsid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id} setUpdateRequest={setUpdateRequest}></Votes>
+            <Votes postid={commentsid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
             <Comment comment={comment}/>
           </li>;
         }): 
-        <div>Loading comments</div>}
+        <div>No comments yet</div>}
       </ul>
     </>: 
     invalidLink ? 

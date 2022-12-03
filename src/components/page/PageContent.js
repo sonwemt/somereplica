@@ -37,16 +37,17 @@ function PageContent({isLoggedIn}) {
     }
   }
 
-  const addComment = async (postId, comment) => {
+  const addComment = async (postid, subid ,comment) => {
     try {
-      const commentRef = await addDoc(collection(postsRef, `${postId}`, 'comments'), {
+      const commentRef = await addDoc(collection(postsRef, `${postid}`, 'comments'), {
         username: isLoggedIn.displayName,
         comment: comment,
         votes: {
           up: 1,
           down: 0,
         },
-        postRef: doc(postsRef, `${postId}`),
+        postid: postid,
+        subreplica: subid,
       });
       await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
         ref: commentRef,
