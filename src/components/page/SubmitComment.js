@@ -1,12 +1,12 @@
 import { useState } from "react";
 import '../../styles/submitcomment.css';
 
-function SubmitComment({postId, addComment, isLoggedIn}) {
+function SubmitComment({postid, passComment, subid, isLoggedIn}) {
   const [commentInput, setCommentInput] = useState('');
 
   const prepareComment = (e) => {
     e.preventDefault();
-    addComment(postId, commentInput);
+    passComment(postid, subid,commentInput);
   }
 
   return <form noValidate className="comment-form" onSubmit={(e) => prepareComment(e)}>

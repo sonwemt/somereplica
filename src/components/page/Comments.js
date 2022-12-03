@@ -9,21 +9,21 @@ import { db } from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
 function Comments({ addComment, upvote, downvote, isLoggedIn}) {
-  const { commentsid } = useParams();
+  const { postid } = useParams();
   const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
   const [comments, setComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
   const [updateRequest, setUpdateRequest] = useState(false);
 
-  const handleAddComment = async (postid, commentInput) => {
-    await addComment(postid, subid,commentInput);
+  const passComment = async (postid, subid, commentInput) => {
+    await addComment(postid, subid, commentInput);
     setUpdateRequest(true);
   }
 
   useEffect(() => {
     const getPost = async () => {
-      const postRef = doc(db, 'posts', `${commentsid}`)
+      const postRef = doc(db, 'posts', `${postid}`)
       const postSnap = await getDoc(postRef);
       if(postSnap.exists()) {
         console.log('idmatch')
@@ -37,7 +37,7 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
           user: postSnap.data().user,
         });
         let tempArray = [];
-        const commentsRef = collection(db, 'posts', commentsid, 'comments');
+        const commentsRef = collection(db, 'posts', postid, 'comments');
         const commentsSnap = await getDocs(commentsRef)
         commentsSnap.forEach((snap) => {
           tempArray.push({
@@ -60,11 +60,11 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
       setUpdateRequest(false);
       getPost();
     }
-  }, [commentsid, invalidLink, updateRequest])
+  }, [postid, invalidLink, updateRequest])
 
   useEffect(() => {
     console.log('update');
-  }, [addComment, isLoggedIn, commentsid, currentPost])
+  }, [addComment, isLoggedIn, postid, currentPost])
 
   return <div className="commentsContainer">{
     currentPost ? 
@@ -72,12 +72,12 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
       <div className="postcard">
         <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
       </div>
-      <SubmitComment addComment={handleAddComment} postId={commentsid} isLoggedIn={isLoggedIn} />
+      <SubmitComment passComment={passComment} postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Votes postid={commentsid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
+            <Votes postid={postid} votes={comment.votes} upvote={upvote} downvote={downvote} isComment={comment.id}></Votes>
             <Comment comment={comment}/>
           </li>;
         }): 
