@@ -82,7 +82,6 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
           postRef: docSnap.data().postRef,
         })
         setUserComments(commentArray);
-
       })
     }
     if(selection === 1 && userData && !userComments) {
@@ -101,8 +100,8 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
         {isLoggedIn.username === userData.username ? <div>You are currently logged in</div>: null}
         Karma: {userData.votes.up - userData.votes.down}
         <ul className="profile-selection-container">
-          <li onClick={() => {setSelection(0)}}>posts</li>
-          <li onClick={() => {setSelection(1)}}>comments</li>
+          <li onClick={() => {setSelection(0)}}><button>posts</button></li>
+          <li onClick={() => {setSelection(1)}}><button>comments</button></li>
         </ul>
         <div className="user-content-container">
           {selection === 0 && userPosts ? userPosts.map((post) => {
