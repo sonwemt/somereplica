@@ -16,6 +16,9 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
     const updatePosts = async () => {
       if(subid === undefined) {
         const postsSnap = await getDocs(collection(db, 'posts'));
+        if(postsSnap.empty) {
+          setPosts([]);
+        }
         postsSnap.forEach((doc) => {
           tempArray.push({
             title: doc.data().title,
@@ -32,6 +35,9 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
           const postsSnap = await getDocs(collection(db, 'subreplicas', `${subid}`, 'posts'))
+          if(postsSnap.empty) {
+            setPosts([]);
+          }
           postsSnap.forEach(async (doc) => {
             const docRef = doc.data().ref;
             const docSnap = await getDoc(docRef);
@@ -53,7 +59,6 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
         
       }    
     }
-    setPosts([]);
     updatePosts();
     console.log('idtrigger');
   }, [subid])

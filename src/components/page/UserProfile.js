@@ -37,8 +37,9 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
     const getUserPosts = async () => {
       let tempArray = [];
       const postsSnap = await getDocs(collection(db, 'users', `${userData.username}`, 'posts'))
-      if(!postsSnap.size < 1) {
+      if(postsSnap.empty) {
         setUserPosts([]);
+        console.log('postssnap emp');
       }
       postsSnap.forEach(async (doc) => {
         const docRef = doc.data().ref;
