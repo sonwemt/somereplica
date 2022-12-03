@@ -45,7 +45,8 @@ function PageContent({isLoggedIn}) {
         votes: {
           up: 1,
           down: 0,
-        }
+        },
+        postRef: doc(postsRef, `${postId}`),
       });
       await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
         ref: commentRef,

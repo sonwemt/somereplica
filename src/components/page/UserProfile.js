@@ -2,6 +2,7 @@ import { getDoc, doc, getDocs, collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { db } from '../firebase';
+import { Comment } from "./Comment";
 import { PostCard } from "./PostCard";
 
 function UserProfile({isLoggedIn, upvote, downvote}) {
@@ -10,7 +11,7 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
   const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState(0);
   const [userPosts, setUserPosts] = useState(false);
-  const [userComments, setUserComments] = useState([]);
+  const [userComments, setUserComments] = useState(false);
 
   
 
@@ -39,7 +40,6 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
       const postsSnap = await getDocs(collection(db, 'users', `${userData.username}`, 'posts'))
       if(postsSnap.empty) {
         setUserPosts([]);
-        console.log('postssnap emp');
       }
       postsSnap.forEach(async (doc) => {
         const docRef = doc.data().ref;
@@ -63,8 +63,32 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
   }, [userData, userPosts])
 
   useEffect(() => {
-    
-  }, [selection])
+    console.log(selection);
+    const getComments = async () => {
+      let commentArray = [];
+      const commentsSnap = await getDocs(collection(db, 'users', `${userData.username}`, 'comments'));
+      if(commentsSnap.empty) {
+        setUserComments([]);
+        console.log('no comments fetched')
+      }
+      commentsSnap.forEach(async (doc) => {
+        const docRef = doc.data().ref;
+        const docSnap = await getDoc(docRef);
+        commentArray.push({
+          username: docSnap.data().username,
+          comment: docSnap.data().comment,
+          votes: docSnap.data().votes,
+          id: docSnap.id,
+          postRef: docSnap.data().postRef,
+        })
+      })
+      setUserComments(commentArray);
+    }
+    if(selection === 1 && userData && !userComments) {
+      getComments();
+      console.log('getting comments')
+    }
+  }, [selection, userComments, userData])
 
   return <div>
     {
@@ -80,9 +104,11 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
           <li onClick={() => {setSelection(1)}}>comments</li>
         </ul>
         <div className="user-content-container">
-          {userPosts ?userPosts.map((post) => {
+          {selection === 0 && userPosts ? userPosts.map((post) => {
             return <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote}/>
-          }) : null}
+          }) : selection === 1 && userComments ? userComments.map((comment) => {
+            return <Comment key={comment.id} comment={comment}/>
+          }):null}
         </div>
       </div>:
       <Navigate to='/page-does-not-exist' />
