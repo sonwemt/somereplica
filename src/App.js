@@ -12,7 +12,7 @@ import {
   signOut, 
   updateProfile
 } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 
 function App() {
   const [loginPrompt, setLoginPrompt] = useState(false);
@@ -30,34 +30,36 @@ function App() {
   }
 
   const createUser = async (username, email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(auth.currentUser, {
-        displayName: username,
-      })
-      setIsLoggedIn(userCredential.user)
-      console.log(isLoggedIn);
-      console.log(userCredential.user, 'username:', userCredential.displayName);
+    const checkUsernameAvailability = await getDoc(doc(db, 'users', `${username}`));
+    if(!checkUsernameAvailability.exists()) {
       try {
-        const createUserProfile = await setDoc(doc(db, 'users', `${auth.currentUser.displayName}`), {
-          created: 'now',
-          uid: auth.currentUser.uid,
-          votes: {
-            up: 1,
-            down: 0,
-          }
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(auth.currentUser, {
+          displayName: username,
         })
-        console.log('created userprofile', createUserProfile)
+        setIsLoggedIn(userCredential.user)
+        try {
+          await setDoc(doc(db, 'users', `${auth.currentUser.displayName}`), {
+            created: 'now',
+            uid: auth.currentUser.uid,
+            votes: {
+              up: 1,
+              down: 0,
+            }
+          })
+          console.log('created userprofile')
+        } catch(error) {
+          console.error('error creating user profile', error);
+        }
+        showLoginPrompt();
+        return false;
       } catch(error) {
-        console.error('error creating user profile', error);
+        return error;
       }
-      
-
-      showLoginPrompt();
-      return false;
-    } catch(error) {
-      return error;
+    } else {
+      return 'usernameTaken';
     }
+    
   }
 
   const logOutUser = () => {

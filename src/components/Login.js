@@ -31,7 +31,9 @@ function Login({verifyLogin, createUser, showLoginPrompt, loginPrompt}) {
     if(!signUpReturn){
       setShowInvalidInput(false);
     } else {
-      if(signUpReturn.code === AuthErrorCodes.INVALID_PASSWORD) {
+      if(signUpReturn === 'usernameTaken') {
+        setShowInvalidInput('Username taken')
+      } else if(signUpReturn.code === AuthErrorCodes.INVALID_PASSWORD) {
         setShowInvalidInput('Wrong password');
       } else {
         setShowInvalidInput(`${signUpReturn.code}`);
