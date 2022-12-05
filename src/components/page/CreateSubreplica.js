@@ -1,8 +1,10 @@
 import { collection, getDoc, doc, setDoc} from 'firebase/firestore';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../firebase';
 
 function CreateSubreplica({isLoggedIn}) {
+  const navigate = useNavigate();
   const [subreplica, setSubreplica] = useState('');
   const [FormMesssage, setFormMessage] = useState(false);
 
@@ -13,7 +15,8 @@ function CreateSubreplica({isLoggedIn}) {
     if(!subSnap.exists()) {
       setDoc(doc(subsRef, `${subreplica}`), {
         creator: isLoggedIn.displayName,
-      })
+      });
+      navigate(`/r/${subreplica}/`, {replace: true});
       setFormMessage('success');
     } else {
       setFormMessage('subreplica already exists');
