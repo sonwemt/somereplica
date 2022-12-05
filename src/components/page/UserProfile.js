@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { Comment } from "./Comment";
 import { PostCard } from "./PostCard";
 
-function UserProfile({isLoggedIn, upvote, downvote}) {
+function UserProfile({isLoggedIn}) {
   const {userid} = useParams();
   const [userData, setUserData] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -106,9 +106,9 @@ function UserProfile({isLoggedIn, upvote, downvote}) {
         </ul>
         <div className="user-content-container">
           {selection === 0 && userPosts ? userPosts.map((post) => {
-            return <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote}/>
+            return <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn} />
           }) : selection === 1 && userComments ? userComments.map((comment) => {
-            return <Comment key={comment.id} comment={comment} upvote={upvote} downvote={downvote}/>
+            return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn}/>
           }): null}
         </div>
       </div>:

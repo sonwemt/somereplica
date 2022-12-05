@@ -6,7 +6,7 @@ import { getDoc, getDocs, doc, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SubList } from "./SubList";
 
-function PostOverview({upvote, downvote, isLoggedIn}) {
+function PostOverview({isLoggedIn}) {
   const { subid } = useParams();
   const [invalidLink, setInvalidLink] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -85,7 +85,7 @@ function PostOverview({upvote, downvote, isLoggedIn}) {
       <ul className="post-list">
         {posts.length > 0 ? posts.map((post) => {
           return (
-            <PostCard key={post.id} post={post} upvote={upvote} downvote={downvote} isLoggedIn={isLoggedIn}/>
+            <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn}/>
           );
         }): <div>No posts yet, be the first!</div>}
       </ul>

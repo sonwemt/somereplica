@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { Votes } from "./Votes";
 import '../../styles/postcard.css';
 
-function PostCard({post, upvote, downvote, detailed = false}) {
+function PostCard({post, isLoggedIn, detailed = false}) {
   return (
   <li className="post-item">
-    <Votes postid={post.id} votes={post.votes} upvote={upvote} downvote={downvote} />
+    <Votes postid={post.id} isLoggedIn={isLoggedIn} votes={post.votes} />
     <div className="post-item-content">
       {
       post.linkExternal ? <a href={`${post.content}`}>{post.title}</a> :

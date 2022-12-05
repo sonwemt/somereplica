@@ -7,7 +7,7 @@ import { PostCard } from "./PostCard";
 import { db } from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
-function Comments({ addComment, upvote, downvote, isLoggedIn}) {
+function Comments({ addComment, isLoggedIn}) {
   const { postid } = useParams();
   const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
@@ -69,14 +69,14 @@ function Comments({ addComment, upvote, downvote, isLoggedIn}) {
     currentPost ? 
     <>
       <div className="postcard">
-        <PostCard post={currentPost} upvote={upvote} downvote={downvote} detailed={true}></PostCard>
+        <PostCard post={currentPost} isLoggedIn={isLoggedIn} detailed={true}></PostCard>
       </div>
       <SubmitComment passComment={passComment} postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
        {comments ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
-            <Comment comment={comment} upvote={upvote} downvote={downvote}/>
+            <Comment comment={comment} isLoggedIn={isLoggedIn}/>
           </li>;
         }): 
         <div>No comments yet</div>}

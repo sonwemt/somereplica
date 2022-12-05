@@ -6,7 +6,7 @@ import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
 import { UserProfile } from './UserProfile';
 import { db } from '../firebase';
-import { collection, addDoc, updateDoc, increment, doc } from 'firebase/firestore';
+import { collection, addDoc } from 'firebase/firestore';
 import { CreateSubreplica } from './CreateSubreplica';
 
 const postsRef = collection(db, 'posts');
@@ -57,40 +57,16 @@ function PageContent({isLoggedIn}) {
       console.error("Error adding comment", e)
     }
   }
-
-  const registerUpvote = async (postid, isComment) => {
-    if(!isComment) {
-      await updateDoc(doc(postsRef, `${postid}`), {
-        "votes.up": increment(1)
-      })
-    } else {
-      await updateDoc(doc(postsRef, `${postid}`, 'comments', `${isComment}`), {
-        "votes.up": increment(1)
-      })
-    }
-  }
-
-  const registerDownvote = async (postid, isComment) => {
-    if(!isComment) {
-      await updateDoc(doc(postsRef, `${postid}`), {
-        "votes.down": increment(1)
-      })
-    } else {
-      await updateDoc(doc(postsRef, `${postid}`, 'comments', `${isComment}`), {
-        "votes.down": increment(1)
-      })
-    }
-  }
   
 
   return <div id="PageContainer">
       <Routes>
-        <Route path='/r/:subid' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/r/:subid/comments/:postid' element={<Comments addComment={addComment} upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
-        <Route path='/' element={<PostOverview upvote={registerUpvote} downvote={registerDownvote} isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:subid' element={<PostOverview isLoggedIn={isLoggedIn} />} />
+        <Route path='/r/:subid/comments/:postid' element={<Comments addComment={addComment} isLoggedIn={isLoggedIn} />} />
+        <Route path='/' element={<PostOverview isLoggedIn={isLoggedIn} />} />
         <Route path='/r/:subid/submitpost' element={<SubmitPost isLoggedIn={isLoggedIn} addPost={addPost} />}/>
         <Route path='/createsubreplica' element={<CreateSubreplica isLoggedIn={isLoggedIn}/>} />
-        <Route path='/u/:userid' element={<UserProfile isLoggedIn={isLoggedIn} upvote={registerUpvote} downvote={registerDownvote}/>} />
+        <Route path='/u/:userid' element={<UserProfile isLoggedIn={isLoggedIn} />} />
         <Route path='*' element={<PageNotFound /> } />
       </Routes>
   </div>
