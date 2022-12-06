@@ -108,7 +108,7 @@ function UserProfile({isLoggedIn}) {
           {selection === 0 && userPosts ? userPosts.map((post) => {
             return <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn} />
           }) : selection === 1 && userComments ? userComments.map((comment) => {
-            return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn}/>
+            return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn} isReference={true}/>
           }): null}
         </div>
       </div>:

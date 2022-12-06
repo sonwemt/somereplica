@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { updateDoc, increment, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import '../../styles/votes.css';
 
 function Votes({postid, votes, isLoggedIn, isComment = false}) {
   const [localVotes, setLocalVotes] = useState(votes);
   const [upvoteCast, setUpvoteCast] = useState(false);
   const [downvoteCast, setDownvoteCast] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(true);
+  const [currentUser, setCurrentUser] = useState(true);
 
-  useState(() => {
+  useEffect(() => {
     const getVoteInfo = async () => {
       let userVoted;
       if(!isComment) {
@@ -27,13 +28,22 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
         setUpvoteCast(false);
       }
     }
-
-    if(firstLoad && isLoggedIn) {
-      setFirstLoad(false);
+    console.log('vote effect triggered')
+    if(!isLoggedIn) {
+      setCurrentUser(false);
+      setDownvoteCast(false);
+      setUpvoteCast(false);
+      console.log('vote currentuser set to false')
+    } else if(isLoggedIn && !currentUser) {
+      setCurrentUser(isLoggedIn.displayName)
       getVoteInfo();
-      console.log('firstload, isloggedin')
+      console.log('isLoggedIn, !currentuser')
+    }  else if(isLoggedIn.displayName !== currentUser) {
+      getVoteInfo();
+      setCurrentUser(isLoggedIn.displayName);
+      console.log('vote currentuser should refresh')
     }
-  }, [firstLoad, isLoggedIn])
+  }, [currentUser, isLoggedIn, postid, isComment])
 
   useEffect(() => {
     console.log('upvotecast:', upvoteCast, ' downvotecast:', downvoteCast);
@@ -160,13 +170,13 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
   }
 
   return <div className="vote-display">
-    <button onClick={handleUpvote}>UP</button>
+    <button onClick={handleUpvote} className={upvoteCast ? 'upvote-active' : null}>UP</button>
     <div className="vote-score">
     {
     localVotes.up - localVotes.down
     }
     </div>
-    <button onClick={handleDownvote}>DOWN</button>
+    <button onClick={handleDownvote} className={downvoteCast ? 'downvote-active' : null}>DOWN</button>
   </div>
 }
 
