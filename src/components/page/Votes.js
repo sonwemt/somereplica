@@ -33,21 +33,14 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
       setCurrentUser(false);
       setDownvoteCast(false);
       setUpvoteCast(false);
-      console.log('vote currentuser set to false')
     } else if(isLoggedIn && !currentUser) {
       setCurrentUser(isLoggedIn.displayName)
       getVoteInfo();
-      console.log('isLoggedIn, !currentuser')
-    }  else if(isLoggedIn.displayName !== currentUser) {
+    } else if(isLoggedIn.displayName !== currentUser) {
       getVoteInfo();
       setCurrentUser(isLoggedIn.displayName);
-      console.log('vote currentuser should refresh')
     }
   }, [currentUser, isLoggedIn, postid, isComment])
-
-  useEffect(() => {
-    console.log('upvotecast:', upvoteCast, ' downvotecast:', downvoteCast);
-  }, [downvoteCast, upvoteCast])
 
   const handleUpvote = async () => {
     if(!isLoggedIn) {
@@ -170,13 +163,13 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
   }
 
   return <div className="vote-display">
-    <button onClick={handleUpvote} className={upvoteCast ? 'upvote-active' : null}>UP</button>
+    <button onClick={handleUpvote} className={upvoteCast ? 'upvote active' : 'upvote'}>U</button>
     <div className="vote-score">
     {
     localVotes.up - localVotes.down
     }
     </div>
-    <button onClick={handleDownvote} className={downvoteCast ? 'downvote-active' : null}>DOWN</button>
+    <button onClick={handleDownvote} className={downvoteCast ? 'downvote active' : 'downvote'}>D</button>
   </div>
 }
 

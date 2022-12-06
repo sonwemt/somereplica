@@ -6,7 +6,7 @@ import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
 import { UserProfile } from './UserProfile';
 import { db } from '../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
 import { CreateSubreplica } from './CreateSubreplica';
 
 const postsRef = collection(db, 'posts');
@@ -31,6 +31,9 @@ function PageContent({isLoggedIn}) {
     await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'posts'), {
       ref: postRef
     });
+    await setDoc(doc(db, 'users', `${isLoggedIn.displayName}`, 'votes', `${postRef.id}`), {
+      vote: 'up',
+    })
       console.log("Document written with ID: ", postRef.id);
     } catch (e) {
       console.error("Error adding post: ", e);
@@ -52,6 +55,9 @@ function PageContent({isLoggedIn}) {
       await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
         ref: commentRef,
       });
+      await setDoc(doc(db, 'users', `${isLoggedIn.displayName}`, 'votes', `${commentRef.id}`), {
+        vote: 'up',
+      })
       console.log("Document written with ID: ", commentRef.id);
     } catch (e) {
       console.error("Error adding comment", e)

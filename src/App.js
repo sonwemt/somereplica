@@ -88,7 +88,7 @@ function App() {
         console.log('user logged out');
       }
     })
-  })
+  }, [])
 
   return (
     <div id="AppContainer">
