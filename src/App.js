@@ -2,7 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import { Header } from './components/header/Header';
 import { PageContent } from './components/page/PageContent';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Login } from './components/Login';
 import { db, auth } from './components/firebase';
 import {
@@ -78,7 +78,7 @@ function App() {
     }
   }
 
-  useState(() => {
+  useEffect(() => {
     onAuthStateChanged(auth, user => {
       if(user !== null) {
         setIsLoggedIn(user);
@@ -88,7 +88,7 @@ function App() {
         console.log('user logged out');
       }
     })
-  }, [auth])
+  })
 
   return (
     <div id="AppContainer">
