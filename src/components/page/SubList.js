@@ -23,13 +23,11 @@ function SubList() {
     }
   }, [localList])
 
-  return <div className='sub-container'>
-    <ul className='sub-list'>
+  return <ul className='sub-list'>
     {subsFetched ? localList.map((sub) => {
       return <li key={sub}><Link to={`/r/${sub}/`} >{sub}</Link></li>
     }): null}
     </ul>
-  </div>
 }
 
 export { SubList };

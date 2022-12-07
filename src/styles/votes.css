@@ -1,6 +1,8 @@
 .vote-display {
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
+  place-items: center;
+  height: 30px;
 }
 
 .vote-score {
@@ -8,7 +10,7 @@
 }
 
 .downvote, .upvote {
-  font-size: 16px;
+  font-size: 14px;
   background-color: white;
   border: none;
 }

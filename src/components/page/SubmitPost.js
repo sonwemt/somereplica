@@ -42,7 +42,7 @@ function SubmitPost({isLoggedIn, addPost}) {
     <button className="mediaButton" onClick={() => {setSubmissionType(1)}}>Image/video</button>
     <button className="linkButton" onClick={() => {setSubmissionType(2)}}>Link</button>
     <form onSubmit={(e) => {preparePost(e)}} >
-      <input placeholder="title" value={submissionTitle} onChange={(e) => {setSubmissionTitle(e.target.value)}} required />
+      <input placeholder="title" value={submissionTitle} onChange={(e) => {setSubmissionTitle(e.target.value)}} maxLength="40" required />
       {
         submissionType === 0 ? <input type="text" placeholder="text(optional)" value={submissionContent} onChange={(e) => {setSubmissionContent(e.target.value)}}/>:
         submissionType === 1 ? <button type="button">upload</button>:

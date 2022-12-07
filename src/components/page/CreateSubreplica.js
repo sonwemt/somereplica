@@ -25,7 +25,7 @@ function CreateSubreplica({isLoggedIn}) {
 
   return <div className='createSubContainer'>
     <form onSubmit={(e) => createSubreplica(e)}>
-      <input type="text" placeholder='Subreplica name' value={subreplica} onChange={(e) => {setSubreplica(e.target.value)}} disabled={!isLoggedIn}></input>
+      <input type="text" placeholder='Subreplica name' value={subreplica} onChange={(e) => {setSubreplica(e.target.value)}} disabled={!isLoggedIn} maxLength="40" minLength="2"></input>
       <button type='submit'>Submit</button>
       <div>{FormMesssage}</div>
     </form>

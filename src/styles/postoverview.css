@@ -1,17 +1,19 @@
 #PostContainer {
   display: grid;
-  padding: 4rem;
+  padding: 2rem;
+  gap: 2rem;
   grid-template-columns: 3fr 1fr;
+  grid-template-rows: 60px 60px 60px 1fr 20px;
 }
 
 .post-list {
   grid-column: 1/2;
-  grid-row: 1/2;
+  grid-row: 2/3;
   display: grid;
   gap: 4rem;
 }
 
-.submit-link {
+.submit-link, .replica-link {
   grid-column: 2/3;
   display: grid;
   height: 3rem;
@@ -20,4 +22,24 @@
   color: white;
   background-color: rgb(0, 191, 255);
   border-radius: 10px;
+  align-self: center;
+}
+
+.submit-link {
+  grid-row: 2/3;
+}
+.replica-link {
+  grid-row: 3/4;
+}
+
+.sub-list {
+  display: grid;
+  list-style: none;
+  grid-column: 2/3;
+  grid-row: 4/5;
+}
+
+.post-navigation {
+  grid-column: 1/2;
+  grid-row: 5/6;
 }

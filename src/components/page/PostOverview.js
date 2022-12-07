@@ -66,7 +66,7 @@ function PostOverview({isLoggedIn}) {
   return (
   <div id="PostContainer">
     <h1 className="sub-header">{subid === undefined ? 'Frontpage': subid}</h1>
-    <SubList></SubList>
+    <SubList className="list-of-subs"/>
     {invalidLink ? <Navigate to='/page-not-found' /> :
     isLoggedIn ?
       <>
@@ -76,7 +76,7 @@ function PostOverview({isLoggedIn}) {
           Submit
         </Link> 
       }
-      <Link to="/createsubreplica" className="submit-link">
+      <Link to="/createsubreplica" className="replica-link">
         Create Subreplica
       </Link>
       </>: 
@@ -89,6 +89,10 @@ function PostOverview({isLoggedIn}) {
           );
         }): <div>No posts yet, be the first!</div>}
       </ul>
+      <div className="post-navigation">
+        <button>Prev</button>
+        <button>Next</button>
+      </div>
   </div>
   )
 }
