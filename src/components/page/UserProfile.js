@@ -1,4 +1,4 @@
-import { getDoc, doc, getDocs, collection } from "firebase/firestore";
+import { getDoc, doc, getDocs, collection, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { db } from '../firebase';
@@ -37,22 +37,16 @@ function UserProfile({isLoggedIn}) {
   useEffect(() => {
     const getUserPosts = async () => {
       let tempArray = [];
-      const postsSnap = await getDocs(collection(db, 'users', `${userData.username}`, 'posts'))
+      const postQuery = query(collection(db, 'posts'), where('user', '==', `${userData.username}`))
+      const postsSnap = await getDocs(postQuery)
       if(postsSnap.empty) {
         setUserPosts([]);
       }
-      postsSnap.forEach(async (doc) => {
-        const docRef = doc.data().ref;
-        const docSnap = await getDoc(docRef);
+      postsSnap.forEach((docSnap) => {
         console.log(docSnap.data().title)
         tempArray.push({
-          title: docSnap.data().title,
-          content: docSnap.data().content,
           id: docSnap.id,
-          linkExternal: docSnap.data().linkExternal,
-          votes: docSnap.data().votes,
-          subreplica: docSnap.data().subreplica,
-          user: docSnap.data().user,
+          ...docSnap.data()
         })
         setUserPosts(tempArray);
       });
@@ -75,12 +69,8 @@ function UserProfile({isLoggedIn}) {
         const docRef = doc.data().ref;
         const docSnap = await getDoc(docRef);
         commentArray.push({
-          username: docSnap.data().username,
-          comment: docSnap.data().comment,
-          votes: docSnap.data().votes,
           id: docSnap.id,
-          postid: docSnap.data().postid,
-          subreplica: docSnap.data().subreplica,
+          ...docSnap.data()
         })
         setUserComments(commentArray);
       })
@@ -105,11 +95,28 @@ function UserProfile({isLoggedIn}) {
           <li onClick={() => {setSelection(1)}}><button>comments</button></li>
         </ul>
         <div className="user-content-container">
-          {selection === 0 && userPosts ? userPosts.map((post) => {
-            return <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn} />
-          }) : selection === 1 && userComments ? userComments.map((comment) => {
-            return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn} isReference={true}/>
-          }): null}
+          {
+            selection === 0 && userPosts.length > 0 ?
+            userPosts.map((post) => {
+              return <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn} />
+            }):
+            selection === 0 && userPosts.length === 0 ?
+            <div>No posts yet</div>:
+
+            selection === 1 && userComments.length > 0 ?
+            userComments.map((comment) => {
+              return (
+                <Comment
+                key={comment.id}
+                comment={comment}
+                isLoggedIn={isLoggedIn}
+                isReference={true}
+                />
+              )
+            }):
+            selection === 1 && userComments.length === 0 ?
+            <div>No comments yet</div>: null
+          }
         </div>
       </div>:
       <Navigate to='/page-does-not-exist' />

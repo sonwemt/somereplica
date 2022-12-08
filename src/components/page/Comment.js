@@ -11,7 +11,7 @@ function Comment({comment, isLoggedIn, isReference = false}) {
     <div className="comment-content">{comment.comment}</div>
     {
       isReference? 
-      <Link to={`/r/${comment.subreplica}/comments/${comment.postid}`}>comments</Link>:
+      <Link to={`/r/${comment.subreplica}/comments/${comment.postid}`}>context</Link>:
       null
     }
   </div>

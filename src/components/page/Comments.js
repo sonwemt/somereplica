@@ -27,25 +27,16 @@ function Comments({ addComment, isLoggedIn}) {
       if(postSnap.exists()) {
         console.log('idmatch')
         setCurrentPost({
-          title: postSnap.data().title,
-          content: postSnap.data().content,
           id: postSnap.id,
-          linkExternal: postSnap.data().linkExternal,
-          subreplica: postSnap.data().subreplica,
-          votes: postSnap.data().votes,
-          user: postSnap.data().user,
+          ...postSnap.data()
         });
         let tempArray = [];
         const commentsRef = collection(db, 'posts', postid, 'comments');
         const commentsSnap = await getDocs(commentsRef)
-        commentsSnap.forEach((snap) => {
+        commentsSnap.forEach((commentSnap) => {
           tempArray.push({
-            username: snap.data().username,
-            comment: snap.data().comment,
-            votes: snap.data().votes,
-            id: snap.id,
-            postid: snap.data().postid,
-            subreplica: snap.data().subreplica,
+            id: commentSnap.id,
+            ...commentSnap.data()
           })
           setComments(tempArray);
         })

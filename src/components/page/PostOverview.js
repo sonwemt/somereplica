@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
-import { getDoc, getDocs, doc, collection } from 'firebase/firestore';
+import { getDoc, getDocs, doc, collection, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SubList } from "./SubList";
 
@@ -10,56 +10,43 @@ function PostOverview({isLoggedIn}) {
   const { subid } = useParams();
   const [invalidLink, setInvalidLink] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const updatePosts = (snapshot) => {
+    let tempArray = [];
+    setPosts([]);
+    snapshot.forEach((doc) => {
+      tempArray.push({
+        title: doc.data().title,
+        content: doc.data().content,
+        id: doc.id,
+        linkExternal: doc.data().linkExternal,
+        votes: doc.data().votes,
+        subreplica: doc.data().subreplica,
+        user: doc.data().user,
+      })
+      setPosts(tempArray);
+    })
+  }
 
   useEffect(() => {
-    let tempArray = [];
-    const updatePosts = async () => {
+    const checkPageState = async () => {
       if(subid === undefined) {
-        const postsSnap = await getDocs(collection(db, 'posts'));
-        if(postsSnap.empty) {
-          setPosts([]);
-        }
-        postsSnap.forEach((doc) => {
-          tempArray.push({
-            title: doc.data().title,
-            content: doc.data().content,
-            id: doc.id,
-            linkExternal: doc.data().linkExternal,
-            votes: doc.data().votes,
-            subreplica: doc.data().subreplica,
-            user: doc.data().user,
-          })
-          setPosts(tempArray);
-        })
+        const snapshot = await getDocs(collection(db, 'posts'));
+        updatePosts(snapshot);
       } else {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
-          const postsSnap = await getDocs(collection(db, 'subreplicas', `${subid}`, 'posts'))
-          if(postsSnap.empty) {
-            setPosts([]);
-          }
-          postsSnap.forEach(async (doc) => {
-            const docRef = doc.data().ref;
-            const docSnap = await getDoc(docRef);
-            tempArray.push({
-              title: docSnap.data().title,
-              content: docSnap.data().content,
-              id: docSnap.id,
-              linkExternal: docSnap.data().linkExternal,
-              votes: docSnap.data().votes,
-              subreplica: docSnap.data().subreplica,
-              user: docSnap.data().user,
-            })
-            setPosts(tempArray);
-          });
+          const subQuery = query(collection(db, 'posts'), where('subreplica', '==', `${subid}`))
+          const snapshot = await getDocs(subQuery);
+          updatePosts(snapshot);
         } else {
           setInvalidLink(true);
           console.log('postoverview invalid link')
         }
-        
       }    
     }
-    updatePosts();
+    checkPageState();
     console.log('idtrigger');
   }, [subid])
 
@@ -90,8 +77,8 @@ function PostOverview({isLoggedIn}) {
         }): <div>No posts yet, be the first!</div>}
       </ul>
       <div className="post-navigation">
-        <button>Prev</button>
-        <button>Next</button>
+        {currentPage > 1 ? <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>: null}
+        <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
       </div>
   </div>
   )

@@ -8,8 +8,12 @@ function CreateSubreplica({isLoggedIn}) {
   const [subreplica, setSubreplica] = useState('');
   const [FormMesssage, setFormMessage] = useState(false);
 
-  const createSubreplica = async (e) => {
+  const validateAndCreateSubreplica = async (e) => {
     e.preventDefault();
+    if(containsWhitespace()) {
+      setFormMessage('Name cannot contain whitespaces');
+      return;
+    }
     const subsRef = collection(db, 'subreplicas');
     const subSnap = await getDoc(doc(subsRef, `${subreplica}`));
     if(!subSnap.exists()) {
@@ -23,8 +27,16 @@ function CreateSubreplica({isLoggedIn}) {
     }
   }
 
+  const containsWhitespace = () => {
+    if((/^\S{2,}$/.test(subreplica))) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   return <div className='createSubContainer'>
-    <form onSubmit={(e) => createSubreplica(e)}>
+    <form onSubmit={(e) => validateAndCreateSubreplica(e)}>
       <input type="text" placeholder='Subreplica name' value={subreplica} onChange={(e) => {setSubreplica(e.target.value)}} disabled={!isLoggedIn} maxLength="40" minLength="2"></input>
       <button type='submit'>Submit</button>
       <div>{FormMesssage}</div>

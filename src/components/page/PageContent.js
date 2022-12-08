@@ -6,7 +6,7 @@ import { SubmitPost } from './SubmitPost';
 import { PageNotFound} from '../PageNotFound';
 import { UserProfile } from './UserProfile';
 import { db } from '../firebase';
-import { collection, addDoc, setDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { CreateSubreplica } from './CreateSubreplica';
 
 const postsRef = collection(db, 'posts');
@@ -24,6 +24,7 @@ function PageContent({isLoggedIn}) {
         up: 1,
         down: 0,
       },
+      created: serverTimestamp(),
     });
     await addDoc(collection(db, 'subreplicas', `${subreplica}`, 'posts'), {
       ref: postRef
@@ -51,6 +52,7 @@ function PageContent({isLoggedIn}) {
         },
         postid: postid,
         subreplica: subid,
+        created: serverTimestamp(),
       });
       await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
         ref: commentRef,
