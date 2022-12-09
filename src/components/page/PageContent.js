@@ -26,13 +26,7 @@ function PageContent({isLoggedIn}) {
       },
       created: serverTimestamp(),
     });
-    await addDoc(collection(db, 'subreplicas', `${subreplica}`, 'posts'), {
-      ref: postRef
-    });
-    await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'posts'), {
-      ref: postRef
-    });
-    await setDoc(doc(db, 'users', `${isLoggedIn.displayName}`, 'votes', `${postRef.id}`), {
+    await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${postRef.id}`), {
       vote: 'up',
     })
       console.log("Document written with ID: ", postRef.id);
@@ -44,7 +38,7 @@ function PageContent({isLoggedIn}) {
   const addComment = async (postid, subid ,comment) => {
     try {
       const commentRef = await addDoc(collection(postsRef, `${postid}`, 'comments'), {
-        username: isLoggedIn.displayName,
+        user: isLoggedIn.displayName,
         comment: comment,
         votes: {
           up: 1,
@@ -54,10 +48,7 @@ function PageContent({isLoggedIn}) {
         subreplica: subid,
         created: serverTimestamp(),
       });
-      await addDoc(collection(db, 'users', `${isLoggedIn.displayName}`, 'comments'), {
-        ref: commentRef,
-      });
-      await setDoc(doc(db, 'users', `${isLoggedIn.displayName}`, 'votes', `${commentRef.id}`), {
+      await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${commentRef.id}`), {
         vote: 'up',
       })
       console.log("Document written with ID: ", commentRef.id);

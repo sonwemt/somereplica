@@ -12,7 +12,7 @@ import {
   signOut, 
   updateProfile
 } from 'firebase/auth';
-import { setDoc, doc, getDoc } from 'firebase/firestore';
+import { setDoc, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 function App() {
   const [loginPrompt, setLoginPrompt] = useState(false);
@@ -39,9 +39,10 @@ function App() {
         })
         setIsLoggedIn(userCredential.user)
         try {
-          await setDoc(doc(db, 'users', `${auth.currentUser.displayName}`), {
-            created: 'now',
+          await setDoc(doc(db, 'users', `${auth.currentUser.uid}`), {
+            created: serverTimestamp(),
             uid: auth.currentUser.uid,
+            displayName: auth.currentUser.displayName,
             votes: {
               up: 1,
               down: 0,

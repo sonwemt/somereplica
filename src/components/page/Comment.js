@@ -5,8 +5,8 @@ import '../../styles/comment.css';
 function Comment({comment, isLoggedIn, isReference = false}) {
   return <div className="commentContainer">
     <Votes postid={comment.postid} votes={comment.votes} isLoggedIn={isLoggedIn} isComment={comment.id}></Votes>
-    <Link to={`/u/${comment.username}/`} className="comment-username">
-      <div>{comment.username}</div>
+    <Link to={`/u/${comment.user}/`} className="comment-username">
+      <div>{comment.user}</div>
     </Link>
     <div className="comment-content">{comment.comment}</div>
     {

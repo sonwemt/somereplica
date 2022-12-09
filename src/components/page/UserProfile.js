@@ -1,4 +1,4 @@
-import { getDoc, doc, getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection, query, where, collectionGroup } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { db } from '../firebase';
@@ -18,18 +18,22 @@ function UserProfile({isLoggedIn}) {
   useEffect(() => {
     const getUserData = async () => {
       console.log(userid)
-      const userSnap = await getDoc(doc(db, 'users', `${userid}`));
-      if(userSnap.exists()) {
-        setUserData({
-          username: userSnap.id,
-          votes: userSnap.data().votes,
-        })
+      const userQuery = query(collection(db, 'users'), where('displayName', '==', `${userid}`))
+      const userSnap = await getDocs(userQuery);
+      if(!userSnap.empty) {
+        console.log('exists')
+        userSnap.forEach((snap) => {
+          setUserData({
+            id: snap.id,
+            ...snap.data(),
+          })
+        });
       } else {
         setUserData(false);
       }
       setLoading(false);
     }
-    if(loading || userData.username !== userid) {
+    if(loading || userData.displayName !== userid) {
       getUserData();
     }
   }, [loading, userData, userid])
@@ -37,7 +41,7 @@ function UserProfile({isLoggedIn}) {
   useEffect(() => {
     const getUserPosts = async () => {
       let tempArray = [];
-      const postQuery = query(collection(db, 'posts'), where('user', '==', `${userData.username}`))
+      const postQuery = query(collection(db, 'posts'), where('user', '==', `${userData.displayName}`))
       const postsSnap = await getDocs(postQuery)
       if(postsSnap.empty) {
         setUserPosts([]);
@@ -60,14 +64,13 @@ function UserProfile({isLoggedIn}) {
     console.log(selection);
     const getComments = async () => {
       let commentArray = [];
-      const commentsSnap = await getDocs(collection(db, 'users', `${userData.username}`, 'comments'));
+      const commentQuery = query(collectionGroup(db, 'comments'), where('user', '==', `${userData.displayName}`))
+      const commentsSnap = await getDocs(commentQuery);
       if(commentsSnap.empty) {
         setUserComments([]);
         console.log('no comments fetched')
       }
-      commentsSnap.forEach(async (doc) => {
-        const docRef = doc.data().ref;
-        const docSnap = await getDoc(docRef);
+      commentsSnap.forEach((docSnap) => {
         commentArray.push({
           id: docSnap.id,
           ...docSnap.data()
@@ -87,8 +90,8 @@ function UserProfile({isLoggedIn}) {
      <div>Loading user</div>: 
       userData ? 
       <div>
-        <span>{userData.username}</span><br/>
-        {isLoggedIn.username === userData.username ? <div>You are currently logged in</div>: null}
+        <span>{userData.displayName}</span><br/>
+        {isLoggedIn.uid === userData.uid ? <div>This is you</div>: null}
         Karma: {userData.votes.up - userData.votes.down}
         <ul className="profile-selection-container">
           <li onClick={() => {setSelection(0)}}><button>posts</button></li>
