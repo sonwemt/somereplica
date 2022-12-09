@@ -2,15 +2,21 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
-import { getDoc, getDocs, doc, collection, query, where } from 'firebase/firestore';
+import { getDoc, getDocs, doc, collection, query, where, orderBy, limit, startAfter, endAt } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SubList } from "./SubList";
+
+const postsPerPage = 3;
 
 function PostOverview({isLoggedIn}) {
   const { subid } = useParams();
   const [invalidLink, setInvalidLink] = useState(false);
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setlastPage] = useState(1);
+  const [firstVisible, setFirstVisible] = useState(null);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [noMorePosts, setNoMorePosts] = useState(false);
 
   const updatePosts = (snapshot) => {
     let tempArray = [];
@@ -27,16 +33,33 @@ function PostOverview({isLoggedIn}) {
   useEffect(() => {
     const checkPageState = async () => {
       if(subid === undefined) {
-        const snapshot = await getDocs(collection(db, 'posts'));
+        const postQuery = query(collection(db, 'posts'), 
+        orderBy('created', 'asc'),
+        limit(postsPerPage)
+        );
+        const snapshot = await getDocs(postQuery);
+        if(snapshot.empty || snapshot.docs.length < postsPerPage) {
+          setNoMorePosts(true);
+        }
+        setFirstVisible(snapshot.docs[0]);
+        setLastVisible(snapshot.docs[snapshot.docs.length - 1])
         updatePosts(snapshot);
       } else {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
           const subQuery = query(
-            collection(db, 'posts'), 
-            where('subreplica', '==', `${subid}`)
-            );
+            collection(db, 'posts'),
+            where('subreplica', '==', `${subid}`),
+            orderBy('created', 'asc'),
+            limit(postsPerPage),
+          )
           const snapshot = await getDocs(subQuery);
+          console.log(snapshot.docs.length)
+          if(snapshot.empty || snapshot.docs.length < postsPerPage) {
+            setNoMorePosts(true);
+          }
+          setFirstVisible(snapshot.docs[0]);
+          setLastVisible(snapshot.docs[snapshot.docs.length - 1])
           updatePosts(snapshot);
         } else {
           setInvalidLink(true);
@@ -45,8 +68,75 @@ function PostOverview({isLoggedIn}) {
       }    
     }
     checkPageState();
+    setlastPage(1);
+    setCurrentPage(1);
+    setNoMorePosts(false);
     console.log('subid change');
   }, [subid])
+
+  useEffect(() => {
+    const incrementPage = async () => {
+      let pageQuery;
+      if(subid === undefined) {
+        pageQuery = query(
+          collection(db, 'posts'), 
+          orderBy('created', 'asc'),
+          startAfter(lastVisible.data().created),
+          limit(postsPerPage)
+        );
+      } else {
+        pageQuery = query(
+          collection(db, 'posts'),
+          where('subreplica', '==', `${subid}`),
+          orderBy('created', 'asc'),
+          startAfter(lastVisible.data().created),
+          limit(postsPerPage),
+        )
+      }
+      const snapshot = await getDocs(pageQuery);
+      if(snapshot.empty || snapshot.docs.length < postsPerPage) {
+        setNoMorePosts(true);
+      }
+      if(snapshot.docs.length > 0) {
+        updatePosts(snapshot);
+      }
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1])
+      setFirstVisible(snapshot.docs[0]);
+    }
+
+    const decrementPage = async () => {
+      let pageQuery;
+      if(subid === undefined) {
+        pageQuery = query(
+          collection(db, 'posts'), 
+          orderBy('created', 'asc'),
+          endAt(firstVisible.data().created),
+          limit(postsPerPage)
+        );
+      } else {
+        pageQuery = query(
+          collection(db, 'posts'),
+          where('subreplica', '==', `${subid}`),
+          orderBy('created', 'asc'),
+          endAt(firstVisible.data().created),
+          limit(postsPerPage),
+        )
+      }
+      const snapshot = await getDocs(pageQuery);
+      setFirstVisible(snapshot.docs[0]);
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1])
+      updatePosts(snapshot);
+    }
+
+    if(currentPage > lastPage) {
+      incrementPage();
+      setlastPage(currentPage);
+    } else if (currentPage < lastPage) {
+      decrementPage();
+      setNoMorePosts(false);
+      setlastPage(currentPage);
+    }
+  }, [currentPage, lastPage, subid, lastVisible, firstVisible])
 
   return (
   <div id="PostContainer">
@@ -80,7 +170,11 @@ function PostOverview({isLoggedIn}) {
           <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>:
           null
         }
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+        {
+          !noMorePosts ? 
+          <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>: 
+          null
+        }
       </div>
   </div>
   )

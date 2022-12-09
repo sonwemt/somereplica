@@ -33,7 +33,9 @@
 }
 
 .sub-list {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   list-style: none;
   grid-column: 2/3;
   grid-row: 4/5;

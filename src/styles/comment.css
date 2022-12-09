@@ -4,6 +4,8 @@
   height: 100px;
   grid-template-rows: 30px 1fr;
   grid-template-columns: 40px 1fr;
+  background-color: white;
+  border: solid 2px lightgray;
 }
 
 .vote-display {
