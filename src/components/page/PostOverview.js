@@ -17,13 +17,8 @@ function PostOverview({isLoggedIn}) {
     setPosts([]);
     snapshot.forEach((doc) => {
       tempArray.push({
-        title: doc.data().title,
-        content: doc.data().content,
         id: doc.id,
-        linkExternal: doc.data().linkExternal,
-        votes: doc.data().votes,
-        subreplica: doc.data().subreplica,
-        user: doc.data().user,
+        ...doc.data(),
       })
       setPosts(tempArray);
     })
@@ -37,7 +32,10 @@ function PostOverview({isLoggedIn}) {
       } else {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
-          const subQuery = query(collection(db, 'posts'), where('subreplica', '==', `${subid}`))
+          const subQuery = query(
+            collection(db, 'posts'), 
+            where('subreplica', '==', `${subid}`)
+            );
           const snapshot = await getDocs(subQuery);
           updatePosts(snapshot);
         } else {
@@ -47,7 +45,7 @@ function PostOverview({isLoggedIn}) {
       }    
     }
     checkPageState();
-    console.log('idtrigger');
+    console.log('subid change');
   }, [subid])
 
   return (
@@ -57,15 +55,15 @@ function PostOverview({isLoggedIn}) {
     {invalidLink ? <Navigate to='/page-not-found' /> :
     isLoggedIn ?
       <>
-      {
-        subid === undefined ? null:
-        <Link to={`/r/${subid}/submitpost`} className="submit-link">
-          Submit
-        </Link> 
-      }
-      <Link to="/createsubreplica" className="replica-link">
-        Create Subreplica
-      </Link>
+        {
+          subid === undefined ? null:
+          <Link to={`/r/${subid}/submitpost`} className="submit-link">
+            Submit
+          </Link> 
+        }
+        <Link to="/createsubreplica" className="replica-link">
+          Create Subreplica
+        </Link>
       </>: 
       <div>Log in or sign up to submit posts</div>
       }
@@ -77,7 +75,11 @@ function PostOverview({isLoggedIn}) {
         }): <div>No posts yet, be the first!</div>}
       </ul>
       <div className="post-navigation">
-        {currentPage > 1 ? <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>: null}
+        {
+          currentPage > 1 ?
+          <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>:
+          null
+        }
         <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
       </div>
   </div>
