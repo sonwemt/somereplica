@@ -23,6 +23,7 @@ function PostCard({post, isLoggedIn, detailed = false}) {
         <Link to={`/u/${post.user}/`}>
           <div>/u/{post.user}</div>
         </Link>
+        
     </div>
     {detailed && !post.linkExternal?
       <div className="self-text">{post.content}</div>: 
