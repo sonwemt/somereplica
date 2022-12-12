@@ -29,7 +29,7 @@ function PostOverview({isLoggedIn}) {
   const [lastVisible, setLastVisible] = useState(null);
   const [noMorePosts, setNoMorePosts] = useState(false);
 
-  const updatePosts = (snapshot, reverse = false) => {
+  const updatePosts = (snapshot, desc = false) => {
     let tempArray = [];
     setPosts(() => []);
     snapshot.forEach((doc) => {
@@ -38,67 +38,59 @@ function PostOverview({isLoggedIn}) {
           ...doc.data(),
         })
     })
-    if(reverse) {
+    if(desc) {
       tempArray.reverse()
       setPosts(() => tempArray);
     } else {
       setPosts(() => tempArray);
-
     }
   }
 
   useEffect(() => {
-    const checkPageState = async () => {
+    const getInitialState = async () => {
+      let postQuery;
+      let countQuery;
+      const postRef = collection(db, 'posts');
       if(subid === undefined) {
-        const countQuery = query(
-          collection(db, 'posts'),
+        countQuery = query(
+          postRef,
           orderBy('created', 'asc'),
         )
-        const postsCount = await getCountFromServer(countQuery);
-        console.log(postsCount.data().count)
-        if(postsCount.data().count <= postsPerPage) {
-          setNoMorePosts(true);
-        }
-
-        const postQuery = query(collection(db, 'posts'), 
-        orderBy('created', 'asc'),
-        limit(postsPerPage)
+        postQuery = query(
+          postRef, 
+          orderBy('created', 'asc'),
+          limit(postsPerPage)
         );
-        const snapshot = await getDocs(postQuery);
-        setFirstVisible(snapshot.docs[0]);
-        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-        updatePosts(snapshot);
       } else {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
-          const countQuery = query(
-            collection(db, 'posts'),
+          countQuery = query(
+            postRef,
             where('subreplica', '==', `${subid}`),
             orderBy('created', 'asc'),
           )
-          const postsCount = await getCountFromServer(countQuery);
-          console.log(postsCount);
-          if(postsCount.data().count <= postsPerPage) {
-            setNoMorePosts(true);
-          }
-
-          const subQuery = query(
-            collection(db, 'posts'),
+          postQuery = query(
+            postRef,
             where('subreplica', '==', `${subid}`),
             orderBy('created', 'asc'),
             limit(postsPerPage),
           )
-          const snapshot = await getDocs(subQuery);
-          setFirstVisible(snapshot.docs[0]);
-          setLastVisible(snapshot.docs[snapshot.docs.length - 1])
-          updatePosts(snapshot);
         } else {
           setInvalidLink(true);
-          console.log('postoverview invalid link')
+          console.log('postoverview invalid link');
+          return;
         }
-      }    
+        const postCount = await getCountFromServer(countQuery);
+        if(postCount.data().count <= postsPerPage) {
+          setNoMorePosts(true);
+        } 
+      }
+      const snapshot = await getDocs(postQuery);
+      setFirstVisible(snapshot.docs[0]);
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1])
+      updatePosts(snapshot);
     }
-    checkPageState();
+    getInitialState();
     setlastPage(1);
     setCurrentPage(1);
     setNoMorePosts(false);
@@ -107,10 +99,10 @@ function PostOverview({isLoggedIn}) {
 
   useEffect(() => {
     const incrementPage = async () => {
-      let pageQuery;
+      let postQuery;
       let countQuery;
       if(subid === undefined) {
-        pageQuery = query(
+        postQuery = query(
           collection(db, 'posts'), 
           orderBy('created', 'asc'),
           startAfter(lastVisible.data().created),
@@ -120,9 +112,8 @@ function PostOverview({isLoggedIn}) {
           collection(db, 'posts'),
           orderBy('created', 'asc'),
         )
-        
       } else {
-        pageQuery = query(
+        postQuery = query(
           collection(db, 'posts'),
           where('subreplica', '==', `${subid}`),
           orderBy('created', 'asc'),
@@ -135,10 +126,10 @@ function PostOverview({isLoggedIn}) {
           orderBy('created', 'asc'),
         )
       }
-      const snapshot = await getDocs(pageQuery);
-      const postsCount = await getCountFromServer(countQuery);
+      const snapshot = await getDocs(postQuery);
+      const postCount = await getCountFromServer(countQuery);
       console.log(currentPage * postsPerPage)
-      if(postsCount.data().count <= currentPage * postsPerPage) {
+      if(postCount.data().count <= currentPage * postsPerPage) {
         setNoMorePosts(true);
       } 
       if(snapshot.docs.length > 0) {
@@ -146,19 +137,20 @@ function PostOverview({isLoggedIn}) {
         setFirstVisible(snapshot.docs[0]);
         setLastVisible(snapshot.docs[snapshot.docs.length - 1])
       }
+      setlastPage(currentPage);
     }
 
     const decrementPage = async () => {
-      let pageQuery;
+      let postQuery;
       if(subid === undefined) {
-        pageQuery = query(
+        postQuery = query(
           collection(db, 'posts'),
           orderBy('created', 'desc'),
           startAfter(firstVisible.data().created),
           limit(postsPerPage),
         );
       } else {
-        pageQuery = query(
+        postQuery = query(
           collection(db, 'posts'),
           where('subreplica', '==', `${subid}`),
           orderBy('created', 'desc'),
@@ -166,19 +158,18 @@ function PostOverview({isLoggedIn}) {
           limit(postsPerPage),
         )
       }
-      const snapshot = await getDocs(pageQuery);
+      const snapshot = await getDocs(postQuery);
       setFirstVisible(snapshot.docs[snapshot.docs.length - 1])
       setLastVisible(snapshot.docs[0])
       updatePosts(snapshot, true);
+      setlastPage(currentPage);
     }
 
     if(currentPage > lastPage) {
       incrementPage();
-      setlastPage(currentPage);
     } else if (currentPage < lastPage) {
-      decrementPage();
-      setlastPage(currentPage);
       setNoMorePosts(false);
+      decrementPage();
     }
   }, [currentPage, lastPage, subid, lastVisible, firstVisible])
 
@@ -215,7 +206,7 @@ function PostOverview({isLoggedIn}) {
           null
         }
         {
-          !noMorePosts ? 
+          !noMorePosts && currentPage === lastPage ? 
           <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>: 
           null
         }

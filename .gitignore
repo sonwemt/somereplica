@@ -29,3 +29,9 @@ firebase.js
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+
+# Testing - Temporary
+
+/src/tests
+emufiles/pagetesting
+/src/components/page/DateTime.js
