@@ -1,7 +1,7 @@
 .commentContainer {
   display: grid;
   width: 100%;
-  height: 100px;
+  height: 100%;
   grid-template-rows: 30px 1fr;
   grid-template-columns: 40px 1fr;
   background-color: white;

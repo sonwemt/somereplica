@@ -1,0 +1,32 @@
+.sort-dropdown {
+  grid-row:2/3;
+  display: grid;
+  grid-template: repeat(2, auto) / fit-content;
+  z-index: 2;
+  width: fit-content;
+  height: fit-content;
+  gap:2px;
+}
+
+.sort-dropdown button {
+  background-color: inherit;
+  width: fit-content;
+  border: none;
+}
+
+.sort-dropdown button {
+  background-color: inherit;
+  width: min-content;
+  height: min-content;
+}
+
+.sort-options {
+  display: grid;
+  background-color: white;
+  padding: 2px;
+  border: solid 1px rgb(75, 75, 75);
+}
+
+.show-sort-options {
+  grid-row: 1/2;
+}
