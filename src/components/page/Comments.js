@@ -7,18 +7,13 @@ import { PostCard } from "./PostCard";
 import { db } from '../firebase';
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 
-function Comments({ addComment, isLoggedIn}) {
+function Comments({ isLoggedIn }) {
   const { postid } = useParams();
   const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(false);
   const [comments, setComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
   const [updateRequest, setUpdateRequest] = useState(false);
-
-  const passComment = async (postid, subid, commentInput) => {
-    await addComment(postid, subid, commentInput);
-    setUpdateRequest(true);
-  }
 
   useEffect(() => {
     const getPost = async () => {
@@ -54,7 +49,7 @@ function Comments({ addComment, isLoggedIn}) {
 
   useEffect(() => {
     console.log('update');
-  }, [addComment, isLoggedIn, postid, currentPost])
+  }, [isLoggedIn, postid, currentPost])
 
   return <div className="commentsContainer">{
     currentPost ? 
@@ -62,7 +57,7 @@ function Comments({ addComment, isLoggedIn}) {
       <div className="postcard">
         <PostCard post={currentPost} isLoggedIn={isLoggedIn} detailed={true}></PostCard>
       </div>
-      <SubmitComment passComment={passComment} postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
+      <SubmitComment postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
        <ul className="comment-list">
        {comments ?
         comments.map((comment) => {

@@ -29,9 +29,9 @@ function PostOverview({isLoggedIn}) {
   const [firstVisible, setFirstVisible] = useState(null);
   const [lastVisible, setLastVisible] = useState(null);
   const [noMorePosts, setNoMorePosts] = useState(false);
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortFilter, setSortFilter] = useState({score: false, order: 'desc'});
 
-  const updatePosts = (snapshot, desc = false) => {
+  const updatePosts = (snapshot, reverse = false) => {
     let tempArray = [];
     setPosts(() => []);
     snapshot.forEach((doc) => {
@@ -40,7 +40,7 @@ function PostOverview({isLoggedIn}) {
           ...doc.data(),
         })
     })
-    if(desc) {
+    if(reverse) {
       tempArray.reverse()
       setPosts(() => tempArray);
     } else {
@@ -49,119 +49,156 @@ function PostOverview({isLoggedIn}) {
   }
 
   useEffect(() => {
-    const getInitialState = async () => {
+    const getFirstPage = async () => {
+      const postRef = collection(db, 'posts');
       let postQuery;
       let countQuery;
-      const postRef = collection(db, 'posts');
+      let postQueryParameters = [];
+
       if(subid === undefined) {
-        countQuery = query(
-          postRef,
-          orderBy('created', sortOrder),
-        );
-        postQuery = query(
-          postRef, 
-          orderBy('created', sortOrder),
-          limit(postsPerPage)
-        );
+        countQuery = postRef;
+
+        if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order));
+        } 
+        postQueryParameters.push(orderBy('created', sortFilter.score ? 'desc': sortFilter.order));
+        postQueryParameters.push(limit(postsPerPage));
       } else {
         const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
         if(subSnap.exists()) {
           countQuery = query(
             postRef,
             where('subreplica', '==', `${subid}`),
-            orderBy('created', sortOrder),
           );
-          postQuery = query(
-            postRef,
-            where('subreplica', '==', `${subid}`),
-            orderBy('created', sortOrder),
-            limit(postsPerPage),
-          );
+
+          postQueryParameters.push(where('subreplica', '==', `${subid}`));
+          if(sortFilter.score) {
+            postQueryParameters.push(orderBy('score', sortFilter.order));
+          } 
+          postQueryParameters.push(orderBy('created', sortFilter.score ? 'desc': sortFilter.order));
+          postQueryParameters.push(limit(postsPerPage));
         } else {
           setInvalidLink(true);
-          console.log('postoverview invalid link');
+          console.log('subreplica not found');
           return;
         }
-        const postCount = await getCountFromServer(countQuery);
-        if(postCount.data().count <= postsPerPage) {
-          setNoMorePosts(true);
-        } 
       }
+
+      const postCount = await getCountFromServer(countQuery);
+      if(postCount.data().count <= postsPerPage) {
+        setNoMorePosts(true);
+      } else {
+        setNoMorePosts(false);
+      }
+
+      postQuery = query(postRef, ...postQueryParameters);
+
       const snapshot = await getDocs(postQuery);
       setFirstVisible(snapshot.docs[0]);
       setLastVisible(snapshot.docs[snapshot.docs.length - 1])
       updatePosts(snapshot);
     }
 
-    getInitialState();
+    getFirstPage();
     setlastPage(1);
     setCurrentPage(1);
-    setNoMorePosts(false);
     console.log('subid change');
-  }, [subid, sortOrder])
+  }, [subid, sortFilter])
 
   useEffect(() => {
     const incrementPage = async () => {
+      const postRef = collection(db, 'posts');
       let postQuery;
       let countQuery;
-      const postRef = collection(db, 'posts');
+      let postQueryParameters = [];
+
       if(subid === undefined) {
-        postQuery = query(
-          postRef, 
-          orderBy('created', sortOrder),
-          startAfter(lastVisible.data().created),
-          limit(postsPerPage)
-        );
-        countQuery = query(
-          postRef,
-          orderBy('created', sortOrder),
-        )
+        countQuery = postRef;
+
+        if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order))
+        }
+        postQueryParameters.push(orderBy('created', sortFilter.score? 'desc': sortFilter.order))
+        
+      
       } else {
-        postQuery = query(
-          postRef,
-          where('subreplica', '==', `${subid}`),
-          orderBy('created', sortOrder),
-          startAfter(lastVisible.data().created),
-          limit(postsPerPage),
-        )
         countQuery = query(
           postRef,
           where('subreplica', '==', `${subid}`),
-          orderBy('created', 'asc'),
         )
+
+        postQueryParameters.push(where('subreplica', '==', `${subid}`));
+        if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order))
+        }
+        postQueryParameters.push(orderBy('created', sortFilter.score? 'desc': sortFilter.order))
       }
+
+      if(sortFilter.score) {
+        postQueryParameters.push(startAfter(lastVisible.data().score, lastVisible.data().created))
+      } else {
+        postQueryParameters.push(startAfter(lastVisible.data().created))
+      }
+      postQueryParameters.push(limit(postsPerPage))
+
+      postQuery = query(postRef, ...postQueryParameters);
+
       const snapshot = await getDocs(postQuery);
       const postCount = await getCountFromServer(countQuery);
       console.log(currentPage * postsPerPage)
       if(postCount.data().count <= currentPage * postsPerPage) {
         setNoMorePosts(true);
-      } 
-      if(snapshot.docs.length > 0) {
-        updatePosts(snapshot);
-        setFirstVisible(snapshot.docs[0]);
-        setLastVisible(snapshot.docs[snapshot.docs.length - 1])
+      } else {
+        setNoMorePosts(false);
       }
+      updatePosts(snapshot);
+      setFirstVisible(snapshot.docs[0]);
+      setLastVisible(snapshot.docs[snapshot.docs.length - 1])
       setlastPage(currentPage);
     }
 
     const decrementPage = async () => {
-      let postQuery;
       const postRef = collection(db, 'posts');
+      let postQuery;
+      let countQuery;
+      let postQueryParameters = [];
+
       if(subid === undefined) {
-        postQuery = query(
-          postRef,
-          orderBy('created', sortOrder === 'asc'? 'desc' : 'asc'),
-          startAfter(firstVisible.data().created),
-          limit(postsPerPage),
-        );
+        countQuery = postRef;
+
+        if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order === 'asc' ? 'desc': 'asc'))
+        }
+        postQueryParameters.push(orderBy('created', sortFilter.score ? 'asc': sortFilter.order === 'asc' ? 'desc': 'asc'))
+
+          // orderBy(sortFilter.type, sortFilter.order === 'asc'? 'desc' : 'asc'),
+          
       } else {
-        postQuery = query(
+        countQuery = query(
           postRef,
           where('subreplica', '==', `${subid}`),
-          orderBy('created', sortOrder === 'asc'? 'desc' : 'asc'),
-          startAfter(firstVisible.data().created),
-          limit(postsPerPage),
         )
+
+        postQueryParameters.push(where('subreplica', '==', `${subid}`));
+        if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order))
+        }
+        postQueryParameters.push(orderBy('score', sortFilter.order))
+        postQueryParameters.push(orderBy('created', sortFilter.order === 'asc'? 'desc': sortFilter.order))
+      }
+      if(sortFilter.score) {
+        postQueryParameters.push(startAfter(firstVisible.data().score, firstVisible.data().created))
+      } else {
+        postQueryParameters.push(startAfter(firstVisible.data().created))
+      }
+      postQueryParameters.push(limit(postsPerPage))
+
+      postQuery = query(postRef, ...postQueryParameters);
+      const postCount = await getCountFromServer(countQuery);
+      if(postCount.data().count <= currentPage * postsPerPage) {
+        setNoMorePosts(true);
+      } else {
+        setNoMorePosts(false);
       }
       const snapshot = await getDocs(postQuery);
       setFirstVisible(snapshot.docs[snapshot.docs.length - 1])
@@ -173,15 +210,14 @@ function PostOverview({isLoggedIn}) {
     if(currentPage > lastPage) {
       incrementPage();
     } else if (currentPage < lastPage) {
-      setNoMorePosts(false);
       decrementPage();
     }
-  }, [currentPage, lastPage, subid, lastVisible, firstVisible, sortOrder]);
+  }, [currentPage, lastPage, subid, lastVisible, firstVisible, sortFilter]);
 
   return (
   <div id="PostContainer">
     <h1 className="sub-header">{subid === undefined ? 'Frontpage': subid}</h1>
-    <SortDropdown setSortOrder={setSortOrder}/>
+    <SortDropdown setSortFilter={setSortFilter}/>
     <SubList className="list-of-subs"/>
     {
       invalidLink ?<Navigate to='/page-not-found' /> :
@@ -207,16 +243,8 @@ function PostOverview({isLoggedIn}) {
       }): <div>No posts yet, be the first!</div>}
     </ul>
     <div className="post-navigation">
-      {
-        currentPage > 1 ?
-        <button onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>:
-        null
-      }
-      {
-        !noMorePosts && currentPage === lastPage ? 
-        <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>: 
-        null
-      }
+      <button onClick={() => setCurrentPage(currentPage - 1) } disabled={currentPage <= 1}>Prev</button>
+      <button onClick={() => setCurrentPage(currentPage + 1)} disabled={noMorePosts && currentPage === lastPage}>Next</button>
     </div>
   </div>
   );

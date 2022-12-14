@@ -1,13 +1,42 @@
+import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import '../../styles/submitcomment.css';
+import { db } from "../firebase";
 
-function SubmitComment({postid, passComment, subid, isLoggedIn}) {
+function SubmitComment({postid, subid, isLoggedIn}) {
   const [commentInput, setCommentInput] = useState('');
+  const navigate = useNavigate();
+
+  const addComment = async (postid, subid, comment) => {
+    try {
+      const postsRef = collection(db, 'posts')
+      const commentRef = await addDoc(collection(postsRef, `${postid}`, 'comments'), {
+        user: isLoggedIn.displayName,
+        comment: comment,
+        votes: {
+          up: 1,
+          down: 0,
+        },
+        score: 1,
+        postid: postid,
+        subreplica: subid,
+        created: serverTimestamp(),
+      });
+      await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${commentRef.id}`), {
+        vote: 'up',
+      })
+      setCommentInput('');
+      navigate(0);
+      console.log("Document written with ID: ", commentRef.id);
+    } catch (e) {
+      console.error("Error adding comment", e)
+    }
+  }
 
   const prepareComment = (e) => {
     e.preventDefault();
-    passComment(postid, subid,commentInput);
-    setCommentInput('');
+    addComment(postid, subid, commentInput);
   }
 
   return <form noValidate className="comment-form" onSubmit={(e) => prepareComment(e)}>

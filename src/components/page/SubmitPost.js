@@ -1,7 +1,9 @@
+import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { db } from "../firebase";
 
-function SubmitPost({isLoggedIn, addPost}) {
+function SubmitPost({isLoggedIn}) {
   //Submissiontypes: 0 - Self.post, 1 - Image/video, 2 - Link
   const [submissionType, setSubmissionType] = useState(0);
   const [submissionTitle, setSubmissionTitle] = useState('');
@@ -9,6 +11,31 @@ function SubmitPost({isLoggedIn, addPost}) {
   const [submissionContent, setSubmissionContent] = useState('');
   const navigate = useNavigate();
   const {subid} = useParams();
+
+  const addPost = async (title, content, subreplica, external) => {
+    try {
+      const postsRef = collection(db, 'posts');
+      const postRef = await addDoc(postsRef, {
+      title: title,
+      content: content,
+      linkExternal: external,
+      subreplica: subreplica,
+      user: isLoggedIn.displayName,
+      votes: {
+        up: 1,
+        down: 0,
+      },
+      score: 1,
+      created: serverTimestamp(),
+    });
+    await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${postRef.id}`), {
+      vote: 'up',
+    })
+      console.log("Document written with ID: ", postRef.id);
+    } catch (e) {
+      console.error("Error adding post: ", e);
+    }
+  }
 
   const isValidHttpUrl = (string) => {
     let url;
