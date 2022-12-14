@@ -33,5 +33,5 @@ ui-debug.log*
 # Testing - Temporary
 
 /src/tests
-emufiles/pagetesting
+/emufiles
 /src/components/page/DateTime.js

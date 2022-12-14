@@ -170,9 +170,6 @@ function PostOverview({isLoggedIn}) {
           postQueryParameters.push(orderBy('score', sortFilter.order === 'asc' ? 'desc': 'asc'))
         }
         postQueryParameters.push(orderBy('created', sortFilter.score ? 'asc': sortFilter.order === 'asc' ? 'desc': 'asc'))
-
-          // orderBy(sortFilter.type, sortFilter.order === 'asc'? 'desc' : 'asc'),
-          
       } else {
         countQuery = query(
           postRef,
@@ -180,11 +177,10 @@ function PostOverview({isLoggedIn}) {
         )
 
         postQueryParameters.push(where('subreplica', '==', `${subid}`));
-        if(sortFilter.score) {
-          postQueryParameters.push(orderBy('score', sortFilter.order))
+         if(sortFilter.score) {
+          postQueryParameters.push(orderBy('score', sortFilter.order === 'asc' ? 'desc': 'asc'))
         }
-        postQueryParameters.push(orderBy('score', sortFilter.order))
-        postQueryParameters.push(orderBy('created', sortFilter.order === 'asc'? 'desc': sortFilter.order))
+        postQueryParameters.push(orderBy('created', sortFilter.score ? 'asc': sortFilter.order === 'asc' ? 'desc': 'asc'))
       }
       if(sortFilter.score) {
         postQueryParameters.push(startAfter(firstVisible.data().score, firstVisible.data().created))
