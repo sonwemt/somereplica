@@ -1,16 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import '../../styles/sortdropdown.css'
 
-function SortDropdown({ setSortFilter }) {
+function SortDropdown({ sortFilter, setSortFilter }) {
   const [showOptions, setShowOptions] = useState(false);
+  const [currentSorting, setCurrentSorting] = useState(null);
+
+  const updateSortString = (score, order) => {
+    if(score === true) {
+      order === 'desc' ? 
+      setCurrentSorting('highest score'): 
+      setCurrentSorting('lowest Score');
+    } else {
+      order === 'desc' ? 
+      setCurrentSorting('new'): 
+      setCurrentSorting('old');
+    }
+  } 
 
   const handleSortChange = (score, order) => {
-    setSortFilter(() => ({score, order}))
+    setSortFilter(() => ({score, order}));
+    setShowOptions(false);
   }
+
+  useEffect(() => {
+    updateSortString(sortFilter.score, sortFilter.order);
+  }, [sortFilter])
  
   return(
     <div className="sort-dropdown">
-      <button className="show-sort-options" onClick={() => setShowOptions(showOptions ? false : true)}>sort</button>
+      <button className="show-sort-options" onClick={() => setShowOptions(showOptions ? false : true)}>{currentSorting}</button>
       {
       showOptions ? 
       <div className="sort-options">

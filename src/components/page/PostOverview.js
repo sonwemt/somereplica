@@ -213,7 +213,7 @@ function PostOverview({isLoggedIn}) {
   return (
   <div id="PostContainer">
     <h1 className="sub-header">{subid === undefined ? 'Frontpage': subid}</h1>
-    <SortDropdown setSortFilter={setSortFilter}/>
+    <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
     <SubList className="list-of-subs"/>
     {
       invalidLink ?<Navigate to='/page-not-found' /> :
