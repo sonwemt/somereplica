@@ -24,7 +24,7 @@ function PostOverview({isLoggedIn}) {
   const { subid } = useParams();
   const [invalidLink, setInvalidLink] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [nextPage, setNextPage] = useState(1);
   const [lastPage, setlastPage] = useState(1);
   const [firstVisible, setFirstVisible] = useState(null);
   const [lastVisible, setLastVisible] = useState(null);
@@ -101,7 +101,7 @@ function PostOverview({isLoggedIn}) {
 
     getFirstPage();
     setlastPage(1);
-    setCurrentPage(1);
+    setNextPage(1);
     console.log('subid change');
   }, [subid, sortFilter])
 
@@ -145,8 +145,8 @@ function PostOverview({isLoggedIn}) {
 
       const snapshot = await getDocs(postQuery);
       const postCount = await getCountFromServer(countQuery);
-      console.log(currentPage * postsPerPage)
-      if(postCount.data().count <= currentPage * postsPerPage) {
+      console.log(nextPage * postsPerPage)
+      if(postCount.data().count <= nextPage * postsPerPage) {
         setNoMorePosts(true);
       } else {
         setNoMorePosts(false);
@@ -154,7 +154,7 @@ function PostOverview({isLoggedIn}) {
       updatePosts(snapshot);
       setFirstVisible(snapshot.docs[0]);
       setLastVisible(snapshot.docs[snapshot.docs.length - 1])
-      setlastPage(currentPage);
+      setlastPage(nextPage);
     }
 
     const decrementPage = async () => {
@@ -191,7 +191,7 @@ function PostOverview({isLoggedIn}) {
 
       postQuery = query(postRef, ...postQueryParameters);
       const postCount = await getCountFromServer(countQuery);
-      if(postCount.data().count <= currentPage * postsPerPage) {
+      if(postCount.data().count <= nextPage * postsPerPage) {
         setNoMorePosts(true);
       } else {
         setNoMorePosts(false);
@@ -200,15 +200,15 @@ function PostOverview({isLoggedIn}) {
       setFirstVisible(snapshot.docs[snapshot.docs.length - 1])
       setLastVisible(snapshot.docs[0])
       updatePosts(snapshot, true);
-      setlastPage(currentPage);
+      setlastPage(nextPage);
     }
 
-    if(currentPage > lastPage) {
+    if(nextPage > lastPage) {
       incrementPage();
-    } else if (currentPage < lastPage) {
+    } else if (nextPage < lastPage) {
       decrementPage();
     }
-  }, [currentPage, lastPage, subid, lastVisible, firstVisible, sortFilter]);
+  }, [nextPage, lastPage, subid, lastVisible, firstVisible, sortFilter]);
 
   return (
   <div id="PostContainer">
@@ -239,8 +239,8 @@ function PostOverview({isLoggedIn}) {
       }): <div>No posts yet, be the first!</div>}
     </ul>
     <div className="post-navigation">
-      <button onClick={() => setCurrentPage(currentPage - 1) } disabled={currentPage <= 1}>Prev</button>
-      <button onClick={() => setCurrentPage(currentPage + 1)} disabled={noMorePosts && currentPage === lastPage}>Next</button>
+      <button onClick={() => setNextPage(nextPage - 1) } disabled={nextPage <= 1}>Prev</button>
+      <button onClick={() => setNextPage(nextPage + 1)} disabled={noMorePosts && nextPage === lastPage}>Next</button>
     </div>
   </div>
   );
