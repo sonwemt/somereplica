@@ -14,7 +14,7 @@ function Comments({ isLoggedIn }) {
   const { postid } = useParams();
   const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(null);
-  const [comments, setComments] = useState(false);
+  const [comments, setComments] = useState([]);
   const [lastPage, setLastPage] = useState(1);
   const [nextPage, setNextPage] = useState(1);
   const [lastVisible, setLastVisible] = useState(null);
@@ -132,7 +132,7 @@ function Comments({ isLoggedIn }) {
        <ul className="comment-list">
         <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
        {
-       comments ?
+       comments.length > 0 ?
         comments.map((comment) => {
           return <li key={comment.id} className="comment-item">
             <Comment comment={comment} isLoggedIn={isLoggedIn}/>
