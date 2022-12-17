@@ -1,7 +1,7 @@
 import { getDocs, collection, query, where, collectionGroup } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 import { Comment } from "./Comment";
 import { PostCard } from "./PostCard";
 
@@ -70,10 +70,11 @@ function UserProfile({isLoggedIn}) {
         setUserComments([]);
         console.log('no comments fetched')
       }
-      commentsSnap.forEach((docSnap) => {
+      commentsSnap.forEach((doc) => {
         commentArray.push({
-          id: docSnap.id,
-          ...docSnap.data()
+          id: doc.id,
+          parentid: doc.ref.parent.parent.id,
+          ...doc.data()
         })
         setUserComments(commentArray);
       })

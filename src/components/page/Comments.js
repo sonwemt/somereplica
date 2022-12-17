@@ -4,7 +4,7 @@ import { SubmitComment } from "./SubmitComment";
 import { Comment } from "./Comment";
 import '../../styles/comments.css';
 import { PostCard } from "./PostCard";
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 import { collection, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
 import { SortDropdown } from "./SortDropdown";
 
@@ -27,6 +27,7 @@ function Comments({ isLoggedIn }) {
     snapshot.forEach((doc) => {
       tempArray.push({
         id: doc.id,
+        parentid: doc.ref.parent.parent.id,
         ...doc.data()
       })
     })
@@ -57,7 +58,7 @@ function Comments({ isLoggedIn }) {
   
   useEffect(() => {
     const getComments = async () => {
-      const postRef = doc(db, 'posts', `${postid}`)
+      const postRef = doc(db, 'posts', `${currentPost.id}`)
       let commentQueryParameters = [];
       if(sortFilter.score) {
         commentQueryParameters.push(orderBy('score', sortFilter.order))
@@ -82,7 +83,7 @@ function Comments({ isLoggedIn }) {
     if(currentPost !== null) {
       getComments();
     }
-  }, [currentPost, postid, sortFilter])
+  }, [currentPost, sortFilter])
 
   useEffect(() => {
     const incrementPage = async () => {
@@ -122,36 +123,40 @@ function Comments({ isLoggedIn }) {
     }
   }, [postid, lastVisible, lastPage, nextPage, sortFilter])
 
-  return <div className="commentsContainer">{
-    currentPost ? 
-    <>
-      <div className="postcard">
-        <PostCard post={currentPost} isLoggedIn={isLoggedIn} detailed={true}></PostCard>
-      </div>
-      <SubmitComment postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
-       <ul className="comment-list">
-        <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
-       {
-       comments.length > 0 ?
-        comments.map((comment) => {
-          return <li key={comment.id} className="comment-item">
-            <Comment comment={comment} isLoggedIn={isLoggedIn}/>
-          </li>;
-        }): 
-        <div>No comments yet</div>
-        }
+  return (
+    <div className="commentsContainer">
+      {
+      currentPost ? 
+      <>
+        <div className="postcard">
+          <PostCard post={currentPost} isLoggedIn={isLoggedIn} detailed={true}></PostCard>
+        </div>
+        <SubmitComment postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
+        <ul className="comment-list">
+          <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
         {
-        (!noMoreComments) && lastPage < nextPage ? <div>Loading</div>:
-        !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Get more comments</button>: 
-        null
-        }
-      </ul>
-      
-    </>: 
-    invalidLink ? 
-    <Navigate to='/page-does-not-exist'></Navigate>:
-    <div>Loading</div>
-  }</div>
+        comments.length > 0 ?
+          comments.map((comment) => {
+            return <li key={comment.id} className="comment-item">
+              <Comment comment={comment} isLoggedIn={isLoggedIn}/>
+            </li>;
+          }): 
+          <div>No comments yet</div>
+          }
+          {
+          (!noMoreComments) && lastPage < nextPage ? <div>Loading</div>:
+          !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Get more comments</button>: 
+          null
+          }
+        </ul>
+        
+      </>: 
+      invalidLink ? 
+      <Navigate to='/page-does-not-exist'></Navigate>:
+      <div>Loading</div>
+    }
+    </div>
+  );
 }
 
 export { Comments };

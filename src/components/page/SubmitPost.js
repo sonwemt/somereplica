@@ -1,7 +1,7 @@
 import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { db } from "../firebase";
+import { db } from "../firebaseConfig";
 
 function SubmitPost({isLoggedIn}) {
   //Submissiontypes: 0 - Self.post, 1 - Image/video, 2 - Link

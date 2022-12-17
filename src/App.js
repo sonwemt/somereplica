@@ -4,7 +4,7 @@ import { Header } from './components/header/Header';
 import { PageContent } from './components/page/PageContent';
 import { useEffect, useState } from 'react';
 import { Login } from './components/Login';
-import { db, auth } from './components/firebase';
+import { db, auth } from './components/firebaseConfig';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,

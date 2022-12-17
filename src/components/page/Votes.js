@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { updateDoc, increment, doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 import '../../styles/votes.css';
 
 function Votes({postid, votes, isLoggedIn, isComment = false}) {

@@ -6,6 +6,7 @@
   grid-template-columns: 40px 1fr;
   background-color: white;
   border: solid 2px lightgray;
+  padding: 0.5rem;
 }
 
 .vote-display {
@@ -25,5 +26,13 @@
   display: grid;
   grid-template-columns: 2/3;
   grid-row: 2/3;
+}
+.comment-options {
+  grid-column: 2/3;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(3, auto);
+  place-self: start;
+  gap: 1rem;
 }
 

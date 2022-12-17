@@ -14,7 +14,7 @@ import {
   startAfter,
   getCountFromServer,
 } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from '../firebaseConfig';
 import { SubList } from "./SubList";
 import { SortDropdown } from "./SortDropdown";
 

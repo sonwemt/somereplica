@@ -2,7 +2,7 @@ import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/fires
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../../styles/submitcomment.css';
-import { db } from "../firebase";
+import { db } from "../firebaseConfig";
 
 function SubmitComment({postid, subid, isLoggedIn}) {
   const [commentInput, setCommentInput] = useState('');
@@ -19,7 +19,6 @@ function SubmitComment({postid, subid, isLoggedIn}) {
           down: 0,
         },
         score: 1,
-        postid: postid,
         subreplica: subid,
         created: serverTimestamp(),
       });
