@@ -118,7 +118,7 @@ function PostOverview({isLoggedIn}) {
         if(sortFilter.score) {
           postQueryParameters.push(orderBy('score', sortFilter.order))
         }
-        postQueryParameters.push(orderBy('created', sortFilter.score? 'desc': sortFilter.order))
+        postQueryParameters.push(orderBy('created', sortFilter.score ? 'desc': sortFilter.order))
         
       
       } else {
