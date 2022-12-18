@@ -1,8 +1,23 @@
 import { Link } from "react-router-dom";
 import { Votes } from "./Votes";
 import '../../styles/postcard.css';
+import { db } from '../firebaseConfig';
+import { useEffect, useState } from "react";
+import { collection, getCountFromServer } from "firebase/firestore";
 
 function PostCard({post, isLoggedIn, detailed = false}) {
+  const [commentCount, setCommentCount] = useState(null);
+
+  useEffect(() => {
+    const getNumberOfComments = async () => {
+      const commentsRef = collection(db, 'posts', post.id, 'comments');
+      const count = await getCountFromServer(commentsRef);
+      setCommentCount(count.data().count);
+    }
+
+    getNumberOfComments();
+  }, [post, commentCount])
+
   return (
   <li className="post-item">
     <Votes postid={post.id} isLoggedIn={isLoggedIn} votes={post.votes} />
@@ -30,7 +45,7 @@ function PostCard({post, isLoggedIn, detailed = false}) {
       null}
     <div className="post-interactions">
       <Link to={`/r/${post.subreplica}/comments/${post.id}`}  >
-        <div className="comment-link">comments</div>
+        <div className="comment-link">{commentCount} comments</div>
       </Link>
       <div>share</div>
       <div>save</div>

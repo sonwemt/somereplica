@@ -20,7 +20,7 @@ function Comments({ isLoggedIn }) {
   const [lastVisible, setLastVisible] = useState(null);
   const [noMoreComments, setNoMoreComments] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
-  const [sortFilter, setSortFilter] = useState({score: false, order: 'desc'});
+  const [sortFilter, setSortFilter] = useState({score: true, order: 'desc'});
 
   const updateComments = (snapshot, replace = false) => {
     let tempArray = [];

@@ -8,7 +8,7 @@ function SortDropdown({ sortFilter, setSortFilter }) {
   const updateSortString = (score, order) => {
     if(score === true) {
       order === 'desc' ? 
-      setCurrentSorting('highest score'): 
+      setCurrentSorting('top'): 
       setCurrentSorting('lowest Score');
     } else {
       order === 'desc' ? 
