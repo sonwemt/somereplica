@@ -4,6 +4,7 @@ import '../../styles/postcard.css';
 import { db } from '../firebaseConfig';
 import { useEffect, useState } from "react";
 import { collection, getCountFromServer } from "firebase/firestore";
+import { TimeElapsed } from "./TimeElapsed";
 
 function PostCard({post, isLoggedIn, detailed = false}) {
   const [commentCount, setCommentCount] = useState(null);
@@ -38,7 +39,7 @@ function PostCard({post, isLoggedIn, detailed = false}) {
         <Link to={`/u/${post.user}/`}>
           <div>/u/{post.user}</div>
         </Link>
-        
+        <TimeElapsed created={post.created}/>
     </div>
     {detailed && !post.linkExternal?
       <div className="self-text">{post.content}</div>: 

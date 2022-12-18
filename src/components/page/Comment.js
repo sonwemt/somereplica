@@ -3,6 +3,7 @@ import { Votes } from "./Votes";
 import '../../styles/comment.css';
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from '../firebaseConfig';
+import { TimeElapsed } from "./TimeElapsed";
 
 function Comment({comment, isLoggedIn, isReference = false}) {
   const navigate = useNavigate();
@@ -25,10 +26,11 @@ function Comment({comment, isLoggedIn, isReference = false}) {
     
     <div className="comment-options">
       {isLoggedIn.displayName === comment.user ?
-      <div onClick={() => handleRemoveAction()}>remove</div>: 
+      <div onClick={() => handleRemoveAction()} style={{color:'gray'}}>remove</div>: 
       null
       }
-      <div>save</div>
+      <div style={{color:'gray'}}>save</div>
+      <TimeElapsed created={comment.created} />
       {
       isReference? 
       <Link to={`/r/${comment.subreplica}/comments/${comment.parentid}`}>context</Link>:
