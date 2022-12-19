@@ -12,7 +12,7 @@ import {
   signOut, 
   updateProfile
 } from 'firebase/auth';
-import { setDoc, doc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { setDoc, doc, serverTimestamp, query, collection, where, getCountFromServer } from 'firebase/firestore';
 
 function App() {
   const [loginPrompt, setLoginPrompt] = useState(false);
@@ -30,8 +30,9 @@ function App() {
   }
 
   const createUser = async (username, email, password) => {
-    const checkUsernameAvailability = await getDoc(doc(db, 'users', `${username}`));
-    if(!checkUsernameAvailability.exists()) {
+    const usernameQuery = query(collection(db, 'users'), where('displayName', '==', `${username}`))
+    const checkUsernameAvailability = await getCountFromServer(usernameQuery);
+    if(!checkUsernameAvailability.data().count > 0) {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(auth.currentUser, {
