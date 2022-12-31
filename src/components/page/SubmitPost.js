@@ -21,6 +21,7 @@ function SubmitPost({isLoggedIn}) {
       linkExternal: external,
       subreplica: subreplica,
       user: isLoggedIn.displayName,
+      uid: isLoggedIn.uid,
       votes: {
         up: 1,
         down: 0,

@@ -19,6 +19,7 @@ function CreateSubreplica({isLoggedIn}) {
     if(!subSnap.exists()) {
       setDoc(doc(subsRef, `${subreplica}`), {
         creator: isLoggedIn.displayName,
+        uid: isLoggedIn.uid,
       });
       navigate(`/r/${subreplica}/`, {replace: true});
       setFormMessage('success');

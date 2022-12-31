@@ -34,7 +34,7 @@ function SortDropdown({ sortFilter, setSortFilter }) {
       <div className="sort-options">
         <button className="sort-by-new" onClick={() => handleSortChange(false ,'desc')}>new</button>
         <button className="sort-by-old" onClick={() => handleSortChange(false, 'asc')}>old</button>
-        <button className="sort-by-upvotes" onClick={() => handleSortChange(true, 'desc')}>highest score</button>
+        <button className="sort-by-upvotes" onClick={() => handleSortChange(true, 'desc')}>top</button>
         <button className="sort-by-downvotes" onClick={() => handleSortChange(true, 'asc')}>lowest score</button>
       </div>:
       null

@@ -29,6 +29,10 @@ firebase.js
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+firebase.json
+firestore.rules
+firestoreWIP.rules
+
 
 # Testing - Temporary
 

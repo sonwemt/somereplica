@@ -13,6 +13,7 @@ function SubmitComment({postid, subid, isLoggedIn}) {
       const postsRef = collection(db, 'posts')
       const commentRef = await addDoc(collection(postsRef, `${postid}`, 'comments'), {
         user: isLoggedIn.displayName,
+        uid: isLoggedIn.uid,
         comment: comment,
         votes: {
           up: 1,
