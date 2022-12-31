@@ -8,13 +8,13 @@ function SubmitComment({postid, subid, isLoggedIn}) {
   const [commentInput, setCommentInput] = useState('');
   const navigate = useNavigate();
 
-  const addComment = async (postid, subid, comment) => {
+  const addComment = async () => {
     try {
       const postsRef = collection(db, 'posts')
       const commentRef = await addDoc(collection(postsRef, `${postid}`, 'comments'), {
         user: isLoggedIn.displayName,
         uid: isLoggedIn.uid,
-        comment: comment,
+        comment: commentInput,
         votes: {
           up: 1,
           down: 0,
@@ -36,18 +36,19 @@ function SubmitComment({postid, subid, isLoggedIn}) {
 
   const prepareComment = (e) => {
     e.preventDefault();
-    addComment(postid, subid, commentInput);
+    addComment();
   }
 
   return <form noValidate className="comment-form" onSubmit={(e) => prepareComment(e)}>
     {
     isLoggedIn ?
     <>
-    <textarea type="text" placeholder="Comment" value={commentInput} onChange={(e) => {setCommentInput(e.target.value)}} maxLength="500" rows="4" cols="50" style={{resize: "none"}}></textarea>
-    <button type="submit">Submit</button></>:
+      <textarea type="text" placeholder="Comment" value={commentInput} onChange={(e) => {setCommentInput(e.target.value)}} maxLength="500" rows="4" cols="50" style={{resize: "none"}}></textarea>
+      <button type="submit">Submit</button>
+    </>:
     <>
-    <textarea type="text" placeholder="Comment" disabled={true} rows="4" cols="50" style={{resize: "none"}}></textarea>
-    <div>You need to be logged in to post a comment</div>
+      <textarea type="text" placeholder="Comment" disabled={true} rows="4" cols="50" style={{resize: "none"}}></textarea>
+      <div>You need to be logged in to post a comment</div>
     </>
     }
   </form>
