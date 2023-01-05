@@ -4,9 +4,12 @@ import '../../styles/comment.css';
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from '../firebaseConfig';
 import { TimeElapsed } from "./TimeElapsed";
+import { useState } from "react";
+import { SubmitComment } from "./SubmitComment";
 
 function Comment({comment, isLoggedIn, isReference = false}) {
   const navigate = useNavigate();
+  const [showReplyBox, setShowReplyBox] = useState(false);
   
   const handleRemoveAction = async () => {
     try {
@@ -16,6 +19,10 @@ function Comment({comment, isLoggedIn, isReference = false}) {
       console.log(error);
     }
   }
+
+  const nestedComments = (comment.children || []).map(comment => {
+    return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn}/>;
+  });
 
   return <div className="commentContainer">
     <Votes postid={comment.parentid} votes={comment.votes} isLoggedIn={isLoggedIn} isComment={comment.id}></Votes>
@@ -30,13 +37,16 @@ function Comment({comment, isLoggedIn, isReference = false}) {
       null
       }
       <div style={{color:'gray'}}>save</div>
-      <TimeElapsed created={comment.created} />
+      <div onClick={() => setShowReplyBox(showReplyBox ? false : true)}>reply</div>
+      <TimeElapsed created={comment.localDate} />
       {
       isReference? 
       <Link to={`/r/${comment.subreplica}/comments/${comment.parentid}`}>context</Link>:
       null
       }
     </div>
+    {showReplyBox ? <SubmitComment subid={comment.subreplica} postid={comment.postid} isLoggedIn={isLoggedIn} isReply={comment}/>: null}
+    {nestedComments}
   </div>
 }
 

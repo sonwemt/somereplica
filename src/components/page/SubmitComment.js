@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import '../../styles/submitcomment.css';
 import { db } from "../firebaseConfig";
 
-function SubmitComment({postid, subid, isLoggedIn}) {
+function SubmitComment({postid, subid, isLoggedIn, isReply = false}) {
   const [commentInput, setCommentInput] = useState('');
   const navigate = useNavigate();
 
@@ -21,6 +21,17 @@ function SubmitComment({postid, subid, isLoggedIn}) {
         },
         score: 1,
         subreplica: subid,
+        postid: postid,
+        commentType: [
+          isReply? 'reply' : 'top',
+          isReply && isReply.commentType[1] === null ?
+          isReply.id : 
+          isReply && isReply.commentType[1] !== null ?
+          isReply.commentType[1] :
+          null
+        ],
+        isReplyToID: isReply ? isReply.id: false,
+        nestLevel: isReply ? isReply.nestLevel + 1: null,
         created: serverTimestamp(),
       });
       await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${commentRef.id}`), {

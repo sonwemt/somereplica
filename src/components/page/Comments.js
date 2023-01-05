@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { SubmitComment } from "./SubmitComment";
-import { Comment } from "./Comment";
 import '../../styles/comments.css';
 import { PostCard } from "./PostCard";
 import { db } from '../firebaseConfig';
-import { collection, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, startAfter, where } from "firebase/firestore";
 import { SortDropdown } from "./SortDropdown";
+import { CommentThread } from "./CommentThread";
 
 const commentsToLoad = 5;
 
@@ -15,6 +15,7 @@ function Comments({ isLoggedIn }) {
   const { subid } = useParams();
   const [currentPost, setCurrentPost] = useState(null);
   const [comments, setComments] = useState([]);
+  
   const [lastPage, setLastPage] = useState(1);
   const [nextPage, setNextPage] = useState(1);
   const [lastVisible, setLastVisible] = useState(null);
@@ -28,11 +29,14 @@ function Comments({ isLoggedIn }) {
       tempArray.push({
         id: doc.id,
         parentid: doc.ref.parent.parent.id,
+        children: [],
+        localDate: doc.data().created.toDate(),
         ...doc.data()
       })
     })
+
     if(replace) {
-      setComments((prev) => [...prev, ...tempArray]);
+      setComments((prev) => [...prev, ...tempArray])
     } else {
       setComments(() => tempArray);
     }
@@ -60,6 +64,7 @@ function Comments({ isLoggedIn }) {
     const getComments = async () => {
       const postRef = doc(db, 'posts', `${currentPost.id}`)
       let commentQueryParameters = [];
+      commentQueryParameters.push(where('commentType', 'array-contains', 'top'))
       if(sortFilter.score) {
         commentQueryParameters.push(orderBy('score', sortFilter.order))
       }
@@ -67,7 +72,7 @@ function Comments({ isLoggedIn }) {
       commentQueryParameters.push(limit(commentsToLoad))
 
       const commentQuery = query(collection(postRef, 'comments'), ...commentQueryParameters);
-      const commentCount = await getCountFromServer(collection(postRef, 'comments'));
+      const commentCount = await getCountFromServer(query(collection(postRef, 'comments'), where('commentType', 'array-contains', 'top')));
       const commentSnap = await getDocs(commentQuery);
 
       setLastVisible(() => commentSnap.docs[commentSnap.docs.length - 1]);
@@ -83,13 +88,19 @@ function Comments({ isLoggedIn }) {
     if(currentPost !== null) {
       getComments();
     }
-  }, [currentPost, sortFilter])
+  }, [currentPost, sortFilter]);
 
   useEffect(() => {
+    console.log('comments state', comments);
+  })
+
+  useEffect(() => {
+
     const incrementPage = async () => {
       const postRef = doc(db, 'posts', `${postid}`);
 
       let commentQueryParameters = [];
+      commentQueryParameters.push(where('commentType', 'array-contains', 'top'))
 
       if(sortFilter.score) {
         commentQueryParameters.push(orderBy('score', sortFilter.order))
@@ -104,7 +115,7 @@ function Comments({ isLoggedIn }) {
       commentQueryParameters.push(limit(commentsToLoad * nextPage))
 
       const commentQuery = query(collection(postRef, 'comments'), ...commentQueryParameters);
-      const commentCount = await getCountFromServer(collection(postRef, 'comments'));
+      const commentCount = await getCountFromServer(query(collection(postRef, 'comments'),where('commentType', 'array-contains', 'top')));
       const commentSnap = await getDocs(commentQuery);
       setLastVisible(() => commentSnap.docs[commentSnap.docs.length - 1]);
 
@@ -114,8 +125,8 @@ function Comments({ isLoggedIn }) {
         setNoMoreComments(false);
       }
       updateComments(commentSnap, true);
-
       setLastPage(nextPage);
+
     }
 
     if(lastPage < nextPage) {
@@ -137,9 +148,7 @@ function Comments({ isLoggedIn }) {
         {
         comments.length > 0 ?
           comments.map((comment) => {
-            return <li key={comment.id} className="comment-item">
-              <Comment comment={comment} isLoggedIn={isLoggedIn}/>
-            </li>;
+            return <CommentThread key={comment.id} comment={comment} isLoggedIn={isLoggedIn} sortFilter={sortFilter} currentPost={currentPost}/>
           }): 
           <div>No comments yet</div>
           }

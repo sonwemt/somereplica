@@ -28,7 +28,7 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
         setUpvoteCast(false);
       }
     }
-    console.log('vote effect triggered')
+    
     if(!isLoggedIn) {
       setCurrentUser(false);
       setDownvoteCast(false);
