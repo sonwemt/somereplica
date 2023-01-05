@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 function TimeElapsed({ created }) {
   const [timeElapsed, setTimeElapsed] = useState(null);
   
-  // taken from: https://stackoverflow.com/a/69122877
+  // credit: https://stackoverflow.com/a/69122877
   const timeAgo = (input) => {
     const date = (input instanceof Date) ? input : new Date(input);
     const formatter = new Intl.RelativeTimeFormat('en');
@@ -26,7 +26,7 @@ function TimeElapsed({ created }) {
   }
 
   useEffect(() => {
-    const creationDate = created.toDate();
+    const creationDate = created;
     setTimeElapsed(timeAgo(creationDate));
   }, [created])
 
