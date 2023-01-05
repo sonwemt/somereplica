@@ -15,7 +15,7 @@ function CommentThread({comment, isLoggedIn, sortFilter, currentPost}) {
           id: doc.id,
           parentid: doc.ref.parent.parent.id,
           children: [],
-          localDate: doc.data().created.toDate,
+          localDate: doc.data().created.toDate(),
           ...doc.data()
         })
       })
