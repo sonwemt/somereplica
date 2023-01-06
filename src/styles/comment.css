@@ -1,3 +1,7 @@
+.threadContainer {
+  display: grid;
+}
+
 .commentContainer {
   display: grid;
   width: 100%;
@@ -5,8 +9,12 @@
   grid-template-rows: 30px 1fr;
   grid-template-columns: 40px 1fr;
   background-color: white;
-  border: solid 2px lightgray;
   padding: 0.5rem;
+}
+
+.childContainer {
+  border-left: 2px solid rgba(142, 0, 158, 0.608);
+  margin-left: 2px;
 }
 
 .vote-display {

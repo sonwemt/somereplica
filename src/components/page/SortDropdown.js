@@ -6,7 +6,7 @@ function SortDropdown({ sortFilter, setSortFilter }) {
   const [currentSorting, setCurrentSorting] = useState(null);
 
   const updateSortString = (score, order) => {
-    if(score === true) {
+    if(score) {
       order === 'desc' ? 
       setCurrentSorting('top'): 
       setCurrentSorting('lowest Score');
@@ -28,7 +28,7 @@ function SortDropdown({ sortFilter, setSortFilter }) {
  
   return(
     <div className="sort-dropdown">
-      <button className="show-sort-options" onClick={() => setShowOptions(showOptions ? false : true)}>{currentSorting}</button>
+      <button className="show-sort-options" onClick={() => setShowOptions(showOptions ? false : true)}>sort({currentSorting})</button>
       {
       showOptions ? 
       <div className="sort-options">

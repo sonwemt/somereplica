@@ -21,7 +21,6 @@ function SubmitComment({postid, subid, isLoggedIn, isReply = false}) {
         },
         score: 1,
         subreplica: subid,
-        postid: postid,
         commentType: [
           isReply? 'reply' : 'top',
           isReply && isReply.commentType[1] === null ?

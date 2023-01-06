@@ -24,7 +24,8 @@ function Comment({comment, isLoggedIn, isReference = false}) {
     return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn}/>;
   });
 
-  return <div className="commentContainer">
+  return <div className="threadContainer">
+    <div className="commentContainer">
     <Votes postid={comment.parentid} votes={comment.votes} isLoggedIn={isLoggedIn} isComment={comment.id}></Votes>
     <Link to={`/u/${comment.user}/`} className="comment-username">
       <div>{comment.user}</div>
@@ -45,8 +46,9 @@ function Comment({comment, isLoggedIn, isReference = false}) {
       null
       }
     </div>
-    {showReplyBox ? <SubmitComment subid={comment.subreplica} postid={comment.postid} isLoggedIn={isLoggedIn} isReply={comment}/>: null}
-    {nestedComments}
+    {showReplyBox ? <SubmitComment subid={comment.subreplica} postid={comment.parentid} isLoggedIn={isLoggedIn} isReply={comment}/>: null}
+    </div>
+    <div className="childContainer">{nestedComments}</div>
   </div>
 }
 

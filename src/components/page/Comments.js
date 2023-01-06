@@ -145,22 +145,22 @@ function Comments({ isLoggedIn }) {
         <SubmitComment postid={postid} subid={subid} isLoggedIn={isLoggedIn} />
         <ul className="comment-list">
           <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
-        {
-        comments.length > 0 ?
-          comments.map((comment) => {
-            return <CommentThread key={comment.id} comment={comment} isLoggedIn={isLoggedIn} sortFilter={sortFilter} currentPost={currentPost}/>
-          }): 
-          <div>No comments yet</div>
+          {
+            comments.length > 0 ?
+            comments.map((comment) => {
+              return <CommentThread key={comment.id} comment={comment} isLoggedIn={isLoggedIn} sortFilter={sortFilter} />
+            }): 
+            <div>No comments yet</div>
           }
           {
-          (!noMoreComments) && lastPage < nextPage ? <div>Loading</div>:
-          !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Get more comments</button>: 
-          null
+            (!noMoreComments) && lastPage < nextPage ? <div>Loading</div>:
+            !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Get more comments</button>: 
+            null
           }
         </ul>
         
       </>: 
-      invalidLink ? 
+      invalidLink ?
       <Navigate to='/page-does-not-exist'></Navigate>:
       <div>Loading</div>
     }
