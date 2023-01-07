@@ -45,7 +45,8 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
   const handleUpvote = async () => {
     if(!isLoggedIn) {
       return;
-    } else if(upvoteCast) {
+    }
+    if(upvoteCast) {
       if(!isComment) {
         await updateDoc(doc(db, 'posts', `${postid}`), {
           "votes.up": increment(-1),
@@ -64,13 +65,14 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
         })
       }
       setUpvoteCast(false);
-      setLocalVotes({up: localVotes.up - 1, down: localVotes.down})
+      setLocalVotes((prev) => ({...prev, up: localVotes.up - 1}))
       return;
-    } else if(downvoteCast) {
+    }
+    if(downvoteCast) {
       if(!isComment) {
         await updateDoc(doc(db, 'posts', `${postid}`), {
           "votes.down": increment(-1),
-          "score": increment(-1),
+          "score": increment(1),
         })
         await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${postid}`), {
           vote: 'up',
@@ -78,7 +80,7 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
       } else {
         await updateDoc(doc(db, 'posts', `${postid}`, 'comments', `${isComment}`), {
           "votes.down": increment(-1),
-          "score": increment(-1),
+          "score": increment(1),
         })
         await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${isComment}`), {
           vote: 'up',
@@ -111,11 +113,12 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
   const handleDownvote = async () => {
     if(!isLoggedIn) {
       return;
-    } else if(downvoteCast) {
+    }
+    if(downvoteCast) {
       if(!isComment) {
         await updateDoc(doc(db, 'posts', `${postid}`), {
           "votes.down": increment(-1),
-          "score": increment(-1),
+          "score": increment(1),
         })
         await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${postid}`), {
           vote: 'none',
@@ -123,16 +126,17 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
       } else {
         await updateDoc(doc(db, 'posts', `${postid}`, 'comments', `${isComment}`), {
           "votes.down": increment(-1),
-          "score": increment(-1),
+          "score": increment(1),
         })
         await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${isComment}`), {
           vote: 'none',
         })
       }
       setDownvoteCast(false);
-      setLocalVotes({up: localVotes.up, down: localVotes.down - 1})
+      setLocalVotes((prev) => ({...prev, down: prev.down - 1}))
       return;
-    } else if(upvoteCast) {
+    } 
+    if(upvoteCast) {
       if(!isComment) {
         await updateDoc(doc(db, 'posts', `${postid}`), {
           "votes.up": increment(-1),
@@ -156,7 +160,7 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
     if(!isComment) {
       await updateDoc(doc(db, 'posts', `${postid}`), {
         "votes.down": increment(1),
-        "score": increment(1),
+        "score": increment(-1),
       })
       await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${postid}`), {
         vote: 'down',
@@ -164,7 +168,7 @@ function Votes({postid, votes, isLoggedIn, isComment = false}) {
     } else {
       await updateDoc(doc(db, 'posts', `${postid}`, 'comments', `${isComment}`), {
         "votes.down": increment(1),
-        "score": increment(1),
+        "score": increment(-1),
       })
       await setDoc(doc(db, 'users', `${isLoggedIn.uid}`, 'votes', `${isComment}`), {
         vote: 'down',

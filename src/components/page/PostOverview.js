@@ -18,7 +18,7 @@ import { db } from '../firebaseConfig';
 import { SubList } from "./SubList";
 import { SortDropdown } from "./SortDropdown";
 
-const postsPerPage = 5;
+const postsPerPage = 8;
 
 function PostOverview({isLoggedIn}) {
   const { subid } = useParams();
@@ -236,12 +236,14 @@ function PostOverview({isLoggedIn}) {
         return (
           <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn}/>
         );
+        
       }): <div>No posts yet, be the first!</div>}
-    </ul>
-    <div className="post-navigation">
+      <div className="post-navigation">
       <button onClick={() => setNextPage(nextPage - 1) } disabled={nextPage <= 1}>Prev</button>
       <button onClick={() => setNextPage(nextPage + 1)} disabled={noMorePosts && nextPage === lastPage}>Next</button>
     </div>
+    </ul>
+    
   </div>
   );
 }

@@ -3,14 +3,16 @@
   padding: 2rem;
   gap: 2rem;
   grid-template-columns: 3fr 1fr;
-  grid-template-rows: 20px 20px 60px 60px 1fr 20px;
+  grid-template-rows: 20px 20px 60px 60px 1fr;
+  height: auto;
 }
 
 .post-list {
   grid-column: 1/2;
-  grid-row: 3/4;
+  grid-row: 3/6;
   display: grid;
-  gap: 4rem;
+  grid-template-rows: repeat(8, 150px);
+  
 }
 
 .submit-link, .replica-link {
@@ -42,6 +44,5 @@
 }
 
 .post-navigation {
-  grid-column: 1/2;
-  grid-row: 6/7;
+  margin-top: 10px;
 }

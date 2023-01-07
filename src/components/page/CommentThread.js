@@ -10,6 +10,7 @@ function CommentThread({comment, isLoggedIn, sortFilter}) {
   useEffect(() => {
     const updateReplies = (snapshot) => {
       let tempArray = [structuredClone(comment)];
+      console.log(tempArray)
       snapshot.forEach((doc) => {
         tempArray.push({
           id: doc.id,
