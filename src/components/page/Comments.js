@@ -50,6 +50,7 @@ function Comments({ isLoggedIn }) {
         console.log('idmatch')
         setCurrentPost({
           id: postSnap.id,
+          localDate: postSnap.data().created.toDate(),
           ...postSnap.data()
         });
       } else {

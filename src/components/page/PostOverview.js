@@ -37,6 +37,7 @@ function PostOverview({isLoggedIn}) {
     snapshot.forEach((doc) => {
         tempArray.push({
           id: doc.id,
+          localDate: doc.data().created.toDate(),
           ...doc.data(),
         })
     })
