@@ -1,4 +1,11 @@
-import { collection, getDoc, doc, setDoc} from 'firebase/firestore';
+import { 
+  collection,
+  query,
+  where,
+  addDoc,
+  getCountFromServer,
+  serverTimestamp
+} from 'firebase/firestore';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../firebaseConfig';
@@ -15,14 +22,23 @@ function CreateSubreplica({isLoggedIn}) {
       return;
     }
     const subsRef = collection(db, 'subreplicas');
-    const subSnap = await getDoc(doc(subsRef, `${subreplica}`));
-    if(!subSnap.exists()) {
-      setDoc(doc(subsRef, `${subreplica}`), {
-        creator: isLoggedIn.displayName,
-        uid: isLoggedIn.uid,
-      });
-      navigate(`/r/${subreplica}/`, {replace: true});
-      setFormMessage('success');
+    const subQuery = query(subsRef, where('subreplicaName', '==', `${subreplica}`))
+    const subCount = await getCountFromServer(subQuery);
+    if(subCount.data().count < 1) {
+      try {
+        const newSubreplica = await addDoc((subsRef), {
+          creator: isLoggedIn.displayName,
+          uid: isLoggedIn.uid,
+          subreplicaName: subreplica,
+          created: serverTimestamp(),
+        });
+        console.log('doc created with id: ', newSubreplica.id);
+        navigate(`/r/${subreplica}/`, {replace: true});
+        setFormMessage('success');
+      } catch (error) {
+        console.log(error)
+      }
+      
     } else {
       setFormMessage('subreplica already exists');
     }
@@ -36,13 +52,22 @@ function CreateSubreplica({isLoggedIn}) {
     }
   }
 
-  return <div className='createSubContainer'>
+  return (
+  <div className='createSubContainer' style={{'padding': '1rem'}}>
     <form onSubmit={(e) => validateAndCreateSubreplica(e)}>
-      <input type="text" placeholder='Subreplica name' value={subreplica} onChange={(e) => {setSubreplica(e.target.value)}} disabled={!isLoggedIn} maxLength="40" minLength="2"></input>
+      <input 
+      type="text"
+      placeholder='Subreplica name'
+      value={subreplica}
+      onChange={(e) => {setSubreplica(e.target.value)}}
+      disabled={!isLoggedIn}
+      maxLength="40" minLength="2"
+      />
       <button type='submit'>Submit</button>
       <div>{FormMesssage}</div>
     </form>
   </div>
+  );
 }
 
 export { CreateSubreplica };

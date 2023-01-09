@@ -1,4 +1,10 @@
-import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc
+} from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import '../../styles/submitcomment.css';
@@ -53,7 +59,16 @@ function SubmitComment({postid, subid, isLoggedIn, isReply = false}) {
     {
     isLoggedIn ?
     <>
-      <textarea type="text" placeholder="Comment" value={commentInput} onChange={(e) => {setCommentInput(e.target.value)}} maxLength="500" rows="4" cols="50" style={{resize: "none"}}></textarea>
+      <textarea
+      type="text"
+      placeholder="Comment"
+      value={commentInput}
+      onChange={(e) => {setCommentInput(e.target.value)}}
+      maxLength="500"
+      rows="4"
+      cols="50"
+      style={{resize: "none"}} 
+      />
       <button type="submit">Submit</button>
     </>:
     <>

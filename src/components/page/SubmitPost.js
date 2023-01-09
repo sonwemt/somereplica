@@ -1,4 +1,10 @@
-import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc
+} from "firebase/firestore";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebaseConfig";

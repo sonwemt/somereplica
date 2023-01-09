@@ -155,7 +155,7 @@ function Comments({ isLoggedIn }) {
           }
           {
             (!noMoreComments) && lastPage < nextPage ? <div>Loading</div>:
-            !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Get more comments</button>: 
+            !noMoreComments ? <button onClick={() => setNextPage(nextPage + 1)}>Load more comments</button>: 
             null
           }
         </ul>

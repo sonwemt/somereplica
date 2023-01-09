@@ -1,4 +1,11 @@
-import { collection, doc, getDocs, orderBy, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { Comment } from "./Comment";
@@ -20,6 +27,8 @@ function CommentThread({comment, isLoggedIn, sortFilter}) {
           ...doc.data()
         })
       })
+
+      // https://stackoverflow.com/a/36829986
       let commentAndReplies = tempArray
 
       const commentMap = {};

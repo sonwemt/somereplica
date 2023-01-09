@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import "../../styles/postoverview.css";
 import { PostCard } from "./PostCard";
-import { 
-  getDoc,
+import {
   getDocs,
-  doc,
   collection,
   query,
   where,
@@ -17,6 +15,7 @@ import {
 import { db } from '../firebaseConfig';
 import { SubList } from "./SubList";
 import { SortDropdown } from "./SortDropdown";
+import { Sidebar } from "./Sidebar";
 
 const postsPerPage = 8;
 
@@ -30,6 +29,7 @@ function PostOverview({isLoggedIn}) {
   const [lastVisible, setLastVisible] = useState(null);
   const [noMorePosts, setNoMorePosts] = useState(false);
   const [sortFilter, setSortFilter] = useState({score: false, order: 'desc'});
+  const [postsFetched, setPostsFetched] = useState(false);
 
   const updatePosts = (snapshot, reverse = false) => {
     let tempArray = [];
@@ -47,6 +47,7 @@ function PostOverview({isLoggedIn}) {
     } else {
       setPosts(() => tempArray);
     }
+    setPostsFetched(() => true)
   }
 
   useEffect(() => {
@@ -65,8 +66,8 @@ function PostOverview({isLoggedIn}) {
         postQueryParameters.push(orderBy('created', sortFilter.score ? 'desc': sortFilter.order));
         postQueryParameters.push(limit(postsPerPage));
       } else {
-        const subSnap = await getDoc(doc(db, 'subreplicas', `${subid}`));
-        if(subSnap.exists()) {
+        const subSnap = await getCountFromServer(query(collection(db, 'subreplicas'), where('subreplicaName', '==', `${subid}`)));
+        if(subSnap.data().count) {
           countQuery = query(
             postRef,
             where('subreplica', '==', `${subid}`),
@@ -100,8 +101,10 @@ function PostOverview({isLoggedIn}) {
       updatePosts(snapshot);
     }
 
+    setPostsFetched(() => false);
     getFirstPage();
     setlastPage(1);
+    
     setNextPage(1);
     console.log('subid change');
   }, [subid, sortFilter])
@@ -205,8 +208,10 @@ function PostOverview({isLoggedIn}) {
     }
 
     if(nextPage > lastPage) {
+      setPostsFetched(() => false)
       incrementPage();
     } else if (nextPage < lastPage) {
+      setPostsFetched(() => false)
       decrementPage();
     }
   }, [nextPage, lastPage, subid, lastVisible, firstVisible, sortFilter]);
@@ -215,7 +220,7 @@ function PostOverview({isLoggedIn}) {
   <div id="PostContainer">
     <h1 className="sub-header">{subid === undefined ? 'Frontpage': subid}</h1>
     <SortDropdown sortFilter={sortFilter} setSortFilter={setSortFilter}/>
-    <SubList className="list-of-subs"/>
+    {subid === undefined ? <SubList className="list-of-subs"/>: <Sidebar isLoggedIn={isLoggedIn} subid={subid}/>}
     {
       invalidLink ?<Navigate to='/page-not-found' /> :
       isLoggedIn ?
@@ -233,18 +238,31 @@ function PostOverview({isLoggedIn}) {
         <div>Log in or sign up to submit posts</div>
     }
     <ul className="post-list">
-      {posts.length > 0 ? posts.map((post) => {
-        return (
-          <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn}/>
-        );
-        
-      }): <div>No posts yet, be the first!</div>}
-      <div className="post-navigation">
-      <button onClick={() => setNextPage(nextPage - 1) } disabled={nextPage <= 1}>Prev</button>
-      <button onClick={() => setNextPage(nextPage + 1)} disabled={noMorePosts && nextPage === lastPage}>Next</button>
-    </div>
+      {
+        posts.length > 0 ? posts.map((post) => {
+          return (
+            <PostCard key={post.id} post={post} isLoggedIn={isLoggedIn}/>
+          );
+          
+        }):
+        postsFetched ? <div>No posts yet, be the first!</div>:
+        <div>loading</div>
+      }
+      {
+        postsFetched ? <div className="post-navigation">
+          <button
+          onClick={() => setNextPage(nextPage - 1)}
+          disabled={nextPage <= 1}
+          >Prev</button>
+
+          <button onClick={() => setNextPage(nextPage + 1)}
+          disabled={
+            noMorePosts &&
+            nextPage === lastPage
+            }>Next</button>
+        </div>: null
+      }
     </ul>
-    
   </div>
   );
 }

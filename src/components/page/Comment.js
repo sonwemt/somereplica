@@ -20,6 +20,7 @@ function Comment({comment, isLoggedIn, isReference = false}) {
     }
   }
 
+  // https://stackoverflow.com/a/36829986
   const nestedComments = (comment.children || []).map(comment => {
     return <Comment key={comment.id} comment={comment} isLoggedIn={isLoggedIn}/>;
   });

@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { updateDoc, increment, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  updateDoc,
+  increment,
+  doc,
+  getDoc,
+  setDoc
+} from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import '../../styles/votes.css';
 

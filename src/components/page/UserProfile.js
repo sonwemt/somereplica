@@ -1,4 +1,10 @@
-import { getDocs, collection, query, where, collectionGroup } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  query,
+  where,
+  collectionGroup
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { db } from '../firebaseConfig';
@@ -22,10 +28,10 @@ function UserProfile({isLoggedIn}) {
       const userSnap = await getDocs(userQuery);
       if(!userSnap.empty) {
         console.log('exists')
-        userSnap.forEach((snap) => {
+        userSnap.forEach((doc) => {
           setUserData({
-            id: snap.id,
-            ...snap.data(),
+            id: doc.id,
+            ...doc.data(),
           })
         });
       } else {
@@ -46,11 +52,11 @@ function UserProfile({isLoggedIn}) {
       if(postsSnap.empty) {
         setUserPosts([]);
       }
-      postsSnap.forEach((docSnap) => {
-        console.log(docSnap.data().title)
+      postsSnap.forEach((doc) => {
+        console.log(doc.data().title)
         tempArray.push({
-          id: docSnap.id,
-          ...docSnap.data()
+          id: doc.id,
+          ...doc.data()
         })
         setUserPosts(tempArray);
       });

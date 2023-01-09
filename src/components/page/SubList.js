@@ -13,9 +13,12 @@ function SubList() {
       const subSnap = await getDocs(subRef);
       let tempArray = [];
       subSnap.forEach((sub) => {
-        tempArray.push(sub.id);
+        tempArray.push({
+          id: sub.id,
+          ...sub.data()
+        });
       })
-      setLocalList(tempArray);
+      setLocalList(() => tempArray);
     }
     if(!subsFetched) {
       getSubs();
@@ -25,7 +28,7 @@ function SubList() {
 
   return <ul className='sub-list'>
     {subsFetched ? localList.map((sub) => {
-      return <li key={sub}><Link to={`/r/${sub}/`} >{sub}</Link></li>
+      return <li key={sub.id}><Link to={`/r/${sub.subreplicaName}/`} >{sub.subreplicaName}</Link></li>
     }): null}
     </ul>
 }
