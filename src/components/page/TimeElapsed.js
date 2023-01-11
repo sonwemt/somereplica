@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 
 function TimeElapsed({ created }) {
   const [timeElapsed, setTimeElapsed] = useState(null);
-  
+
   // credit: https://stackoverflow.com/a/69122877
   const timeAgo = (input) => {
-    const date = (input instanceof Date) ? input : new Date(input);
-    const formatter = new Intl.RelativeTimeFormat('en');
+    const date = input instanceof Date ? input : new Date(input);
+    const formatter = new Intl.RelativeTimeFormat("en");
     const ranges = {
       years: 3600 * 24 * 365,
       months: 3600 * 24 * 30,
@@ -14,7 +14,7 @@ function TimeElapsed({ created }) {
       days: 3600 * 24,
       hours: 3600,
       minutes: 60,
-      seconds: 1
+      seconds: 1,
     };
     const secondsElapsed = (date.getTime() - Date.now()) / 1000;
     for (let key in ranges) {
@@ -23,16 +23,20 @@ function TimeElapsed({ created }) {
         return formatter.format(Math.round(delta), key);
       }
     }
-  }
+  };
 
   useEffect(() => {
     const creationDate = created;
     setTimeElapsed(timeAgo(creationDate));
-  }, [created])
+  }, [created]);
 
-  return (<div className="time-container">
-    {timeElapsed !== null ? <div style={{color: 'gray'}}>{ timeElapsed }</div>:null}
-  </div>);
+  return (
+    <div className="time-container">
+      {timeElapsed !== null ? (
+        <div style={{ color: "gray" }}>{timeElapsed}</div>
+      ) : null}
+    </div>
+  );
 }
 
 export { TimeElapsed };

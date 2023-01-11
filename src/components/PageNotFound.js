@@ -6,17 +6,20 @@ function PageNotFound() {
   const { params } = useParams();
 
   useEffect(() => {
-    if(params !== 'page-does-not-exist') {
+    if (params !== "page-does-not-exist") {
       setMatchParams(true);
     }
-  },[matchParams, setMatchParams, params])
+  }, [matchParams, setMatchParams, params]);
 
-  return <div>{
-    !matchParams ?
-    <Navigate to='/page-does-not-exist'/> :
-    <div>Page does not exist</div>
-    }
-  </div>
+  return (
+    <div>
+      {!matchParams ? (
+        <Navigate to="/page-does-not-exist" />
+      ) : (
+        <div>Page does not exist</div>
+      )}
+    </div>
+  );
 }
 
 export { PageNotFound };
