@@ -1,5 +1,5 @@
 import { AuthErrorCodes } from "firebase/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/login.css";
 
 function Login({ verifyLogin, createUser, showLoginPrompt, loginPrompt }) {
@@ -45,7 +45,7 @@ function Login({ verifyLogin, createUser, showLoginPrompt, loginPrompt }) {
     }
   };
 
-  useState(() => {
+  useEffect(() => {
     if (loginPrompt === "login") {
       setShowUsernameInput(false);
     } else if (loginPrompt === "signup") {
