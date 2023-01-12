@@ -33,13 +33,22 @@ function CreateSubreplica({ isLoggedIn }) {
           creator: isLoggedIn.displayName,
           uid: isLoggedIn.uid,
           subreplicaName: subreplica,
+          members: 1,
           created: serverTimestamp(),
         });
+        const addSubscription = await addDoc(
+          collection(db, "users", `${isLoggedIn.uid}`, "subscriptions"),
+          {
+            subreplicaName: subreplica,
+          }
+        );
         console.log("doc created with id: ", newSubreplica.id);
+        console.log("added subscription with id: ", addSubscription.id);
         navigate(`/r/${subreplica}/`, { replace: true });
         setFormMessage("success");
       } catch (error) {
         console.log(error);
+        setFormMessage(() => error.code);
       }
     } else {
       setFormMessage("subreplica already exists");

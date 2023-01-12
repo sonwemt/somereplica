@@ -12,6 +12,7 @@ import { db } from "../firebaseConfig";
 
 function SubmitComment({ postid, subid, isLoggedIn, isReply = false }) {
   const [commentInput, setCommentInput] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
   const navigate = useNavigate();
 
   const addComment = async () => {
@@ -51,8 +52,9 @@ function SubmitComment({ postid, subid, isLoggedIn, isReply = false }) {
       setCommentInput("");
       navigate(0);
       console.log("Document written with ID: ", commentRef.id);
-    } catch (e) {
-      console.error("Error adding comment", e);
+    } catch (error) {
+      console.error("Error adding comment", error);
+      setErrorMessage(error.code);
     }
   };
 
@@ -81,7 +83,19 @@ function SubmitComment({ postid, subid, isLoggedIn, isReply = false }) {
             cols="50"
             style={{ resize: "none" }}
           />
-          <button type="submit">Submit</button>
+          <div
+            style={{
+              display: "grid",
+              width: "fit-content",
+              height: "fit-content",
+              gridTemplateColumns: "fit-content fit-content",
+              gridAutoFlow: "column",
+              gap: "4px",
+            }}
+          >
+            <button type="submit">Submit</button>
+            {errorMessage !== null ? <div>{errorMessage}</div> : null}
+          </div>
         </>
       ) : (
         <>

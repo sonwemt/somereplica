@@ -12,15 +12,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth";
-import {
-  setDoc,
-  doc,
-  serverTimestamp,
-  query,
-  collection,
-  where,
-  getCountFromServer,
-} from "firebase/firestore";
+import { setDoc, doc, serverTimestamp, getDoc } from "firebase/firestore";
 
 function App() {
   const [loginPrompt, setLoginPrompt] = useState(false);
@@ -42,22 +34,26 @@ function App() {
   };
 
   const createUser = async (username, email, password) => {
-    const usernameQuery = query(
-      collection(db, "users"),
-      where("displayName", "==", `${username}`)
+    const validateUniqueUsername = await getDoc(
+      doc(db, "usernames", `${username}`)
     );
-    const checkUsernameAvailability = await getCountFromServer(usernameQuery);
-    if (!checkUsernameAvailability.data().count > 0) {
+    if (!validateUniqueUsername.exists()) {
       try {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
+        console.log(
+          "successfully created user with id: ",
+          userCredential.user.uid
+        );
         await updateProfile(auth.currentUser, {
           displayName: username,
         });
-        setIsLoggedIn(userCredential.user);
+        await setDoc(doc(db, "usernames", `${username}`), {
+          uid: userCredential.user.uid,
+        });
         try {
           await setDoc(doc(db, "users", `${auth.currentUser.uid}`), {
             created: serverTimestamp(),
@@ -68,7 +64,7 @@ function App() {
               down: 0,
             },
           });
-          console.log("created userprofile");
+          console.log("created userprofile db entry");
         } catch (error) {
           console.error("error creating user profile", error);
         }
@@ -78,7 +74,7 @@ function App() {
         return error;
       }
     } else {
-      return "usernameTaken";
+      return "Username taken";
     }
   };
 

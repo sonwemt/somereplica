@@ -26,6 +26,10 @@ function Login({ verifyLogin, createUser, showLoginPrompt, loginPrompt }) {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (usernameInput === "") {
+      setShowInvalidInput(() => "enter a valid username");
+      return;
+    }
     const signUpReturn = await createUser(
       usernameInput,
       emailInput,
@@ -35,7 +39,7 @@ function Login({ verifyLogin, createUser, showLoginPrompt, loginPrompt }) {
     if (!signUpReturn) {
       setShowInvalidInput(false);
     } else {
-      if (signUpReturn === "usernameTaken") {
+      if (signUpReturn === "Username taken") {
         setShowInvalidInput("Username taken");
       } else if (signUpReturn.code === AuthErrorCodes.INVALID_PASSWORD) {
         setShowInvalidInput("Wrong password");

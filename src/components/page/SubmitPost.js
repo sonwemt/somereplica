@@ -15,6 +15,7 @@ function SubmitPost({ isLoggedIn }) {
   const [submissionTitle, setSubmissionTitle] = useState("");
   const [submissionUrl, setSubmissionUrl] = useState("");
   const [submissionContent, setSubmissionContent] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { subid } = useParams();
 
@@ -42,8 +43,10 @@ function SubmitPost({ isLoggedIn }) {
         }
       );
       console.log("Document written with ID: ", postRef.id);
-    } catch (e) {
-      console.error("Error adding post: ", e);
+      navigate(`/r/${subid}/`, { replace: true });
+    } catch (error) {
+      console.error("Error adding post: ", error);
+      setErrorMessage(() => error.code);
     }
   };
 
@@ -62,11 +65,9 @@ function SubmitPost({ isLoggedIn }) {
     e.preventDefault();
     if (submissionType === 0) {
       await addPost(submissionTitle, submissionContent, subid, false);
-      navigate(`/r/${subid}/`, { replace: true });
     } else if (submissionType === 2) {
       if (isValidHttpUrl(submissionUrl)) {
         await addPost(submissionTitle, submissionUrl, subid, true);
-        navigate(`/r/${subid}/`, { replace: true });
         console.log("link valid");
       } else {
         console.log("link invalid");
@@ -141,6 +142,7 @@ function SubmitPost({ isLoggedIn }) {
             <button id="SubmitContent" type="submit">
               Submit
             </button>
+            <div className="post-submission-error">{errorMessage}</div>
           </form>
         </>
       ) : (
