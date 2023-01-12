@@ -5,6 +5,7 @@ import { SubscribeToSub } from "./SubscribeToSub";
 
 function Sidebar({ isLoggedIn, subid }) {
   const [subData, setSubData] = useState(null);
+  const [refreshData, setRefreshData] = useState(null);
 
   useEffect(() => {
     const getSubData = async () => {
@@ -18,16 +19,31 @@ function Sidebar({ isLoggedIn, subid }) {
           ...doc.data(),
         }));
       });
+      setRefreshData(false);
     };
-    if (subData === null) {
+    if (subData === null || refreshData === true) {
       getSubData();
     }
-  }, [subData, subid]);
+  }, [subData, subid, refreshData]);
 
   return (
-    <div className="sidebar-container" style={{ display: "grid" }}>
-      {subData ? subData.subreplicaName : null}
-      <SubscribeToSub isLoggedIn={isLoggedIn} />
+    <div
+      className="sidebar-container"
+      style={{ display: "grid", gridRow: "4/5" }}
+    >
+      {subData ? (
+        <>
+          <div>{subData.subreplicaName}</div>
+          <div>members: {subData.members}</div>
+        </>
+      ) : null}
+      {subData ? (
+        <SubscribeToSub
+          isLoggedIn={isLoggedIn}
+          subData={subData}
+          setRefreshData={setRefreshData}
+        />
+      ) : null}
     </div>
   );
 }

@@ -109,8 +109,8 @@ function PostOverview({ isLoggedIn }) {
 
     setPostsFetched(() => false);
     getFirstPage();
-    setlastPage(1);
 
+    setlastPage(1);
     setNextPage(1);
     console.log("subid change");
   }, [subid, sortFilter]);
